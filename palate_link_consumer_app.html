@@ -1,0 +1,612 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #FDF8F2;
+    --warm-white: #FEFCF9;
+    --bark: #3D2B1F;
+    --bark-light: #6B4C3B;
+    --paw: #E8734A;
+    --paw-light: #F5A882;
+    --sage: #7A9E7E;
+    --sage-light: #B8D4BB;
+    --butter: #F2C94C;
+    --mist: #D4C5B5;
+    --mist-light: #EDE5DA;
+    --text-main: #2C1F14;
+    --text-sub: #8A7060;
+    --text-hint: #B8A898;
+  }
+
+  body { background: var(--cream); font-family: 'Noto Sans KR', sans-serif; }
+
+  .app-shell {
+    max-width: 390px;
+    margin: 0 auto;
+    background: var(--cream);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; min-height: 100vh; animation: fadeIn 0.3s ease; }
+  .screen.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px 6px; font-size: 12px; font-weight: 500; color: var(--text-main);
+  }
+
+  /* ── NAV BAR ── */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 390px; background: var(--warm-white);
+    border-top: 1px solid var(--mist-light);
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 0 20px; z-index: 100;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; transition: all 0.2s;
+    padding: 4px 16px; border-radius: 12px;
+    color: var(--text-hint); font-size: 10px; font-weight: 500;
+  }
+  .nav-item.active { color: var(--paw); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+
+  /* ── SCREEN: HOME ── */
+  #screen-home .hero {
+    background: linear-gradient(160deg, #3D2B1F 0%, #6B4C3B 100%);
+    padding: 20px 24px 32px; position: relative; overflow: hidden;
+  }
+  #screen-home .hero::after {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(232,115,74,0.15); pointer-events: none;
+  }
+  .hero-greeting { font-size: 13px; color: var(--paw-light); margin-bottom: 4px; }
+  .hero-name { font-family: 'Gmarket Sans', sans-serif; font-size: 22px; color: white; font-weight: 500; margin-bottom: 2px; }
+  .hero-sub { font-size: 13px; color: var(--mist); }
+  .pet-card {
+    margin: 0 24px; margin-top: -24px;
+    background: var(--warm-white); border-radius: 20px;
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 20px rgba(61,43,31,0.12);
+  }
+  .pet-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--paw-light), var(--paw));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .pet-info-name { font-size: 16px; font-weight: 500; color: var(--text-main); margin-bottom: 2px; }
+  .pet-info-detail { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
+  .stat-row { display: flex; gap: 8px; }
+  .stat-chip {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500;
+    background: var(--mist-light); color: var(--bark-light);
+  }
+  .stat-chip.good { background: #E8F5E9; color: #2E7D32; }
+
+  .section-title { font-size: 16px; font-weight: 500; color: var(--text-main); margin-bottom: 12px; }
+  .home-section { padding: 24px 24px 0; }
+
+  .today-kit {
+    background: var(--warm-white); border-radius: 16px;
+    border: 1px solid var(--mist-light);
+    overflow: hidden; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .today-kit:active { transform: scale(0.99); }
+  .kit-banner {
+    background: linear-gradient(120deg, #E8734A, #F5A882);
+    padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .kit-day { font-size: 11px; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
+  .kit-title { font-family: 'Gmarket Sans', sans-serif; font-size: 17px; color: white; font-weight: 500; }
+  .kit-emoji { font-size: 36px; }
+  .kit-items { padding: 14px 18px; }
+  .kit-item-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .kit-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--paw); flex-shrink: 0; }
+  .kit-item-name { font-size: 13px; color: var(--text-main); }
+  .kit-item-type { font-size: 11px; color: var(--text-sub); margin-left: auto; }
+  .kit-cta {
+    margin: 4px 18px 14px;
+    background: var(--bark); color: white;
+    border: none; border-radius: 12px; width: calc(100% - 36px);
+    padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.2s;
+  }
+  .kit-cta:hover { background: var(--bark-light); }
+
+  .recent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .recent-card {
+    background: var(--warm-white); border-radius: 14px;
+    border: 1px solid var(--mist-light); padding: 12px 14px;
+  }
+  .recent-food { font-size: 12px; font-weight: 500; color: var(--text-main); margin-bottom: 2px; }
+  .recent-rate { font-size: 22px; font-weight: 500; }
+  .recent-rate.high { color: var(--sage); }
+  .recent-rate.low { color: var(--paw); }
+  .recent-date { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+
+  /* ── SCREEN: RECORD ── */
+  #screen-record { background: var(--cream); }
+  .record-header { padding: 20px 24px 16px; }
+  .page-title { font-family: 'Gmarket Sans', sans-serif; font-size: 20px; color: var(--text-main); font-weight: 500; }
+  .page-sub { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+
+  .record-today-box {
+    margin: 0 24px 20px;
+    background: var(--warm-white); border-radius: 16px;
+    border: 1px solid var(--mist-light); padding: 16px 18px;
+  }
+  .rtb-label { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
+  .rtb-name { font-size: 15px; font-weight: 500; color: var(--text-main); margin-bottom: 12px; }
+
+  .finish-btn-row { display: flex; gap: 8px; margin-bottom: 4px; }
+  .finish-btn {
+    flex: 1; padding: 10px 0; border-radius: 10px;
+    border: 1.5px solid var(--mist); background: transparent;
+    font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-sub);
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.2s;
+  }
+  .finish-btn.selected-yes { border-color: var(--sage); background: #E8F5E9; color: #2E7D32; }
+  .finish-btn.selected-no { border-color: var(--paw); background: #FFF0EB; color: var(--paw); }
+
+  .tag-section { padding: 0 24px 20px; }
+  .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--mist); background: var(--warm-white);
+    font-size: 13px; color: var(--text-sub); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tag.selected { border-color: var(--paw); background: #FFF0EB; color: var(--paw); }
+
+  .video-upload-section { padding: 0 24px 20px; }
+  .video-box {
+    border: 1.5px dashed var(--mist); border-radius: 16px;
+    padding: 28px 20px; text-align: center; cursor: pointer;
+    background: var(--warm-white); transition: border-color 0.2s;
+  }
+  .video-box:hover { border-color: var(--paw); }
+  .video-icon { font-size: 32px; margin-bottom: 8px; }
+  .video-text { font-size: 13px; color: var(--text-sub); }
+  .video-hint { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
+
+  .submit-btn {
+    margin: 0 24px 20px;
+    background: var(--paw); color: white; border: none;
+    border-radius: 14px; width: calc(100% - 48px); padding: 14px;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.2s;
+  }
+  .submit-btn:hover { background: var(--bark-light); }
+
+  /* ── SCREEN: REPORT ── */
+  #screen-report { background: var(--cream); }
+  .report-hero {
+    background: linear-gradient(150deg, #7A9E7E, #B8D4BB);
+    padding: 24px 24px 36px;
+  }
+  .report-hero-title { font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 6px; }
+  .report-hero-main { font-family: 'Gmarket Sans', sans-serif; font-size: 20px; color: white; font-weight: 500; line-height: 1.4; }
+
+  .score-card {
+    margin: 0 24px; margin-top: -24px;
+    background: var(--warm-white); border-radius: 20px;
+    padding: 18px; box-shadow: 0 4px 20px rgba(61,43,31,0.10);
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+    text-align: center;
+  }
+  .score-item-val { font-family: 'Gmarket Sans', sans-serif; font-size: 24px; font-weight: 500; color: var(--text-main); }
+  .score-item-val span { font-size: 14px; }
+  .score-item-label { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+  .score-divider { width: 1px; background: var(--mist-light); margin: 0 auto; }
+
+  .best-combo-section { padding: 24px 24px 0; }
+  .combo-card {
+    background: var(--warm-white); border-radius: 16px;
+    border: 1px solid var(--mist-light); padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .combo-rank { font-size: 11px; color: var(--paw); font-weight: 500; margin-bottom: 4px; }
+  .combo-name { font-size: 15px; font-weight: 500; color: var(--text-main); margin-bottom: 6px; }
+  .combo-bar-bg { height: 6px; background: var(--mist-light); border-radius: 3px; overflow: hidden; }
+  .combo-bar { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .combo-rate { font-size: 12px; color: var(--text-sub); margin-top: 6px; }
+
+  .ai-insight {
+    margin: 0 24px 20px;
+    background: linear-gradient(135deg, #FDF3EE, #FFF8F2);
+    border: 1px solid var(--paw-light); border-radius: 16px;
+    padding: 16px 18px;
+  }
+  .ai-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: var(--paw); margin-bottom: 8px; }
+  .ai-text { font-size: 13px; color: var(--text-main); line-height: 1.7; }
+
+  /* ── SCREEN: SHOP ── */
+  #screen-shop { background: var(--cream); }
+  .shop-header { padding: 20px 24px 16px; }
+  .shop-badge {
+    display: inline-block; background: var(--paw); color: white;
+    font-size: 11px; padding: 4px 12px; border-radius: 20px; margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .shop-section { padding: 0 24px 16px; }
+  .product-card {
+    background: var(--warm-white); border-radius: 14px;
+    border: 1px solid var(--mist-light); padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .product-card:active { transform: scale(0.99); }
+  .product-thumb {
+    width: 56px; height: 56px; border-radius: 12px;
+    background: var(--mist-light); display: flex; align-items: center;
+    justify-content: center; font-size: 28px; flex-shrink: 0;
+  }
+  .product-name { font-size: 14px; font-weight: 500; color: var(--text-main); margin-bottom: 2px; }
+  .product-desc { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
+  .price-row { display: flex; align-items: center; gap: 8px; }
+  .price-now { font-size: 16px; font-weight: 500; color: var(--paw); }
+  .price-original { font-size: 12px; color: var(--text-hint); text-decoration: line-through; }
+  .price-badge { font-size: 11px; background: #FFF0EB; color: var(--paw); padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+  .test-badge { font-size: 11px; background: #E8F5E9; color: #2E7D32; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+
+  .kit-order-banner {
+    margin: 0 24px 16px;
+    background: linear-gradient(120deg, var(--bark), var(--bark-light));
+    border-radius: 16px; padding: 18px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+  }
+  .kob-text { font-family: 'Gmarket Sans', sans-serif; font-size: 16px; color: white; font-weight: 500; line-height: 1.4; }
+  .kob-sub { font-size: 12px; color: var(--mist); margin-top: 4px; }
+  .kob-emoji { font-size: 40px; }
+
+  /* ── Scrollable content ── */
+  .scroll-content { overflow-y: auto; padding-bottom: 80px; }
+</style>
+
+<div class="app-shell">
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>팔레트 링크</span>
+      <span>🔋</span>
+    </div>
+    <div class="scroll-content">
+      <div class="hero">
+        <div class="hero-greeting">안녕하세요, 김민지님 👋</div>
+        <div class="hero-name">오늘의 미식 가이드</div>
+        <div class="hero-sub">두부의 3번째 오마카세 데이</div>
+      </div>
+
+      <div class="pet-card">
+        <div class="pet-avatar">🐶</div>
+        <div class="pet-info">
+          <div class="pet-info-name">두부 (말티즈, 3세)</div>
+          <div class="pet-info-detail">6.2kg · 알러지: 없음</div>
+          <div class="stat-row">
+            <span class="stat-chip good">완식률 87%</span>
+            <span class="stat-chip">테스트 12회</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-section">
+        <div class="section-title">오늘의 미식 🍽️</div>
+        <div class="today-kit" onclick="goTo('screen-record')">
+          <div class="kit-banner">
+            <div>
+              <div class="kit-day">Day 3 · 연어 페어링</div>
+              <div class="kit-title">연어 오일 토핑<br>스페셜 레시피</div>
+            </div>
+            <div class="kit-emoji">🐟</div>
+          </div>
+          <div class="kit-items">
+            <div class="kit-item-row"><div class="kit-dot"></div><span class="kit-item-name">오리엔트 연어 그레인프리</span><span class="kit-item-type">사료</span></div>
+            <div class="kit-item-row"><div class="kit-dot"></div><span class="kit-item-name">노르웨이 연어 오일</span><span class="kit-item-type">오일 토핑</span></div>
+            <div class="kit-item-row"><div class="kit-dot"></div><span class="kit-item-name">고구마 퓨레</span><span class="kit-item-type">퓨레 토핑</span></div>
+          </div>
+          <button class="kit-cta">식사 기록하기 →</button>
+        </div>
+      </div>
+
+      <div class="home-section" style="margin-top: 20px;">
+        <div class="section-title">최근 기록 📊</div>
+        <div class="recent-grid">
+          <div class="recent-card">
+            <div class="recent-food">닭가슴살 + 산양유</div>
+            <div class="recent-rate high">100%</div>
+            <div class="recent-date">어제 저녁</div>
+          </div>
+          <div class="recent-card">
+            <div class="recent-food">참치 그레인프리</div>
+            <div class="recent-rate low">45%</div>
+            <div class="recent-date">2일 전</div>
+          </div>
+          <div class="recent-card">
+            <div class="recent-food">소고기 + 퓨레</div>
+            <div class="recent-rate high">92%</div>
+            <div class="recent-date">3일 전</div>
+          </div>
+          <div class="recent-card" style="cursor:pointer;" onclick="goTo('screen-report')">
+            <div class="recent-food" style="color:var(--paw);">리포트 보기</div>
+            <div style="font-size:28px; margin-top:6px;">→</div>
+            <div class="recent-date">전체 분석</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORD -->
+  <div id="screen-record" class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span style="cursor:pointer; color:var(--paw);" onclick="goTo('screen-home')">← 홈</span>
+      <span>🔋</span>
+    </div>
+    <div class="scroll-content">
+      <div class="record-header">
+        <div class="page-title">식사 기록</div>
+        <div class="page-sub">두부의 오늘 식사는 어땠나요?</div>
+      </div>
+
+      <div class="record-today-box">
+        <div class="rtb-label">오늘의 레시피</div>
+        <div class="rtb-name">🐟 연어 오일 토핑 스페셜 레시피</div>
+        <div class="finish-btn-row">
+          <button class="finish-btn" id="btn-yes" onclick="selectFinish('yes')">😋 완식했어요</button>
+          <button class="finish-btn" id="btn-no" onclick="selectFinish('no')">😔 남겼어요</button>
+        </div>
+      </div>
+
+      <div class="tag-section">
+        <div class="section-title" style="font-size:14px; margin-bottom:10px;">반응 태그 선택</div>
+        <div class="tag-grid" id="tag-grid">
+          <span class="tag" onclick="toggleTag(this)">🐾 엄청 좋아했어요</span>
+          <span class="tag" onclick="toggleTag(this)">💨 빨리 먹었어요</span>
+          <span class="tag" onclick="toggleTag(this)">👃 냄새 맡다 먹었어요</span>
+          <span class="tag" onclick="toggleTag(this)">😐 보통이에요</span>
+          <span class="tag" onclick="toggleTag(this)">🙅 처음엔 안 먹었어요</span>
+          <span class="tag" onclick="toggleTag(this)">💧 물 많이 마셨어요</span>
+        </div>
+      </div>
+
+      <div class="video-upload-section">
+        <div class="section-title" style="font-size:14px; margin-bottom:10px;">식사 영상 업로드</div>
+        <div class="video-box" id="video-box" onclick="simulateUpload()">
+          <div class="video-icon" id="video-icon">🎬</div>
+          <div class="video-text" id="video-text">영상을 업로드하면 AI가 분석해요</div>
+          <div class="video-hint" id="video-hint">몰입도 · 기대 지수 · 식사 속도 자동 측정</div>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitRecord()">기록 저장하고 분석받기 ✓</button>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div id="screen-report" class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span style="cursor:pointer; color:var(--sage);" onclick="goTo('screen-home')">← 홈</span>
+      <span>🔋</span>
+    </div>
+    <div class="scroll-content">
+      <div class="report-hero">
+        <div class="report-hero-title">두부의 기호성 리포트 · 12회 분석</div>
+        <div class="report-hero-main">두부는 연어·닭고기 기반<br>오일 토핑을 가장 좋아해요 🐟</div>
+      </div>
+
+      <div class="score-card">
+        <div>
+          <div class="score-item-val">87<span>%</span></div>
+          <div class="score-item-label">평균 완식률</div>
+        </div>
+        <div style="display:flex; align-items:stretch;">
+          <div style="width:1px; background:var(--mist-light);"></div>
+        </div>
+        <div>
+          <div class="score-item-val">9.1<span>/10</span></div>
+          <div class="score-item-label">기대 지수</div>
+        </div>
+        <div style="display:flex; align-items:stretch;">
+          <div style="width:1px; background:var(--mist-light);"></div>
+        </div>
+        <div>
+          <div class="score-item-val">12<span>회</span></div>
+          <div class="score-item-label">테스트 완료</div>
+        </div>
+      </div>
+
+      <div class="best-combo-section">
+        <div class="section-title" style="margin-bottom:12px;">베스트 조합 TOP 3 🏆</div>
+
+        <div class="combo-card">
+          <div class="combo-rank">🥇 1위</div>
+          <div class="combo-name">닭가슴살 사료 + 산양유</div>
+          <div class="combo-bar-bg"><div class="combo-bar" style="width:100%; background: linear-gradient(90deg, #7A9E7E, #B8D4BB);"></div></div>
+          <div class="combo-rate">완식률 100% · 3회 연속 완식</div>
+        </div>
+
+        <div class="combo-card">
+          <div class="combo-rank">🥈 2위</div>
+          <div class="combo-name">연어 그레인프리 + 연어오일</div>
+          <div class="combo-bar-bg"><div class="combo-bar" style="width:89%; background: linear-gradient(90deg, #E8734A, #F5A882);"></div></div>
+          <div class="combo-rate">완식률 89% · 기대 지수 9.4</div>
+        </div>
+
+        <div class="combo-card">
+          <div class="combo-rank">🥉 3위</div>
+          <div class="combo-name">소고기 사료 + 고구마 퓨레</div>
+          <div class="combo-bar-bg"><div class="combo-bar" style="width:76%; background: linear-gradient(90deg, #F2C94C, #EF9F27);"></div></div>
+          <div class="combo-rate">완식률 76% · 식사 속도 빠름</div>
+        </div>
+      </div>
+
+      <div class="ai-insight" style="margin-top:20px;">
+        <div class="ai-badge">✨ AI 인사이트</div>
+        <div class="ai-text">두부는 <strong>단백질 함량이 높고 오일 성분이 첨가된</strong> 조합에서 완식률이 높게 나타났어요. 곡물이 없는 그레인프리 제품을 선호하며, 퓨레 형태의 토핑보다 오일 타입에 더 잘 반응해요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOP -->
+  <div id="screen-shop" class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>팔레트 링크</span>
+      <span>🔋</span>
+    </div>
+    <div class="scroll-content">
+      <div class="shop-header">
+        <div class="shop-badge">두부 맞춤 추천</div>
+        <div class="page-title">두부가 좋아하는<br>제품들이에요</div>
+      </div>
+
+      <div class="kit-order-banner" onclick="alert('오마카세 키트 주문 화면으로 이동합니다!')">
+        <div>
+          <div class="kob-text">8종 오마카세<br>키트 주문</div>
+          <div class="kob-sub">월 1회 · 기호성 테스트 포함</div>
+        </div>
+        <div class="kob-emoji">🍱</div>
+      </div>
+
+      <div class="shop-section">
+        <div class="section-title" style="font-size:14px; margin-bottom:12px;">완식 검증 제품 ✓</div>
+
+        <div class="product-card">
+          <div class="product-thumb">🐔</div>
+          <div style="flex:1;">
+            <div class="product-name">오리엔트 닭가슴살 그레인프리</div>
+            <div class="product-desc">두부 완식률 100% 검증</div>
+            <div class="price-row">
+              <span class="price-now">32,900원</span>
+              <span class="price-original">38,000원</span>
+              <span class="price-badge">-13%</span>
+              <span class="test-badge">완식 검증</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb">🐟</div>
+          <div style="flex:1;">
+            <div class="product-name">노르웨이 연어 오일 토핑</div>
+            <div class="product-desc">두부 기대 지수 9.4 · 오메가3 고함량</div>
+            <div class="price-row">
+              <span class="price-now">18,500원</span>
+              <span class="price-original">22,000원</span>
+              <span class="price-badge">-16%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb">🥛</div>
+          <div style="flex:1;">
+            <div class="product-name">자연에서 산양유 파우더</div>
+            <div class="product-desc">두부 완식률 100% 조합 토핑</div>
+            <div class="price-row">
+              <span class="price-now">15,900원</span>
+              <span class="price-original">19,000원</span>
+              <span class="price-badge">-16%</span>
+              <span class="test-badge">완식 검증</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-bar">
+    <div class="nav-item active" id="nav-home" onclick="goTo('screen-home')">
+      <div class="nav-icon">🏠</div>
+      <span>홈</span>
+    </div>
+    <div class="nav-item" id="nav-record" onclick="goTo('screen-record')">
+      <div class="nav-icon">✏️</div>
+      <span>기록</span>
+    </div>
+    <div class="nav-item" id="nav-report" onclick="goTo('screen-report')">
+      <div class="nav-icon">📊</div>
+      <span>리포트</span>
+    </div>
+    <div class="nav-item" id="nav-shop" onclick="goTo('screen-shop')">
+      <div class="nav-icon">🛒</div>
+      <span>쇼핑</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const screens = ['screen-home','screen-record','screen-report','screen-shop'];
+  const navIds  = ['nav-home','nav-record','nav-report','nav-shop'];
+
+  function goTo(id) {
+    screens.forEach(s => {
+      const el = document.getElementById(s);
+      el.classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+
+    const idx = screens.indexOf(id);
+    navIds.forEach((n,i) => {
+      document.getElementById(n).classList.toggle('active', i === idx);
+    });
+    document.querySelector('.scroll-content')?.scrollTo?.(0,0);
+  }
+
+  function selectFinish(type) {
+    const yes = document.getElementById('btn-yes');
+    const no  = document.getElementById('btn-no');
+    yes.classList.remove('selected-yes');
+    no.classList.remove('selected-no');
+    if (type === 'yes') yes.classList.add('selected-yes');
+    else no.classList.add('selected-no');
+  }
+
+  function toggleTag(el) {
+    el.classList.toggle('selected');
+  }
+
+  function simulateUpload() {
+    const box  = document.getElementById('video-box');
+    const icon = document.getElementById('video-icon');
+    const text = document.getElementById('video-text');
+    const hint = document.getElementById('video-hint');
+    icon.textContent = '⏳';
+    text.textContent = 'AI 분석 중...';
+    hint.textContent = '식사 몰입도·기대 지수 측정 중';
+    setTimeout(() => {
+      icon.textContent = '✅';
+      text.textContent = '분석 완료! 몰입도 9.2 / 기대 지수 8.7';
+      hint.textContent = '영상 업로드 성공';
+      box.style.borderColor = 'var(--sage)';
+      box.style.background = '#F0FAF2';
+    }, 2000);
+  }
+
+  function submitRecord() {
+    alert('기록이 저장되었어요! 리포트가 업데이트됩니다 🎉');
+    goTo('screen-report');
+  }
+</script>
