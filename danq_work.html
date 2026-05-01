@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan Q</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --green: #1B7A47;
+  --green-dark: #145C35;
+  --green-mid: #3FA86E;
+  --green-bg: #EBF6F1;
+  --green-border: #C2E0D1;
+  --text: #111111;
+  --text2: #444444;
+  --text3: #999999;
+  --border: #EBEBEB;
+  --bg: #F5F5F5;
+  --white: #FFFFFF;
+  --red: #FF3B30;
+  --shadow: 0 1px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 2px 16px rgba(0,0,0,0.10);
+}
+
+body {
+  background: #C2CEC8;
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  display: flex; justify-content: center;
+  min-height: 100vh; padding: 28px 0 60px;
+}
+
+/* ── PHONE SHELL ── */
+.phone {
+  width: 390px;
+  min-height: 844px;
+  background: var(--bg);
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+/* ── STATUS BAR ── */
+.status {
+  background: var(--white);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 26px 8px;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.3px;
+}
+.status-r { display: flex; align-items: center; gap: 6px; }
+.status-r svg { width: 15px; height: 15px; }
+
+/* ── SCREENS ── */
+.screen { display: none; flex-direction: column; min-height: 844px; }
+.screen.active { display: flex; animation: fadein 0.2s ease; }
+@keyframes fadein { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SCROLL ── */
+.scroll { flex:1; overflow-y:auto; padding-bottom: 88px; }
+.scroll::-webkit-scrollbar { display:none; }
+
+/* ── TOP HEADER ── */
+.top-bar {
+  background: var(--white);
+  padding: 8px 20px 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  font-size: 26px; font-weight: 900; color: var(--green);
+  letter-spacing: -2px; line-height: 1; padding-bottom: 8px;
+}
+.top-icons { display: flex; align-items: center; gap: 4px; }
+.top-icon-btn {
+  width: 38px; height: 38px; background: none; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border-radius: 50%; position: relative;
+  color: var(--text); transition: background 0.15s;
+}
+.top-icon-btn:hover { background: var(--bg); }
+.notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--red);
+  border: 1.5px solid white;
+}
+
+/* ── SEGMENT ── */
+.segtabs {
+  background: var(--white);
+  display: flex;
+  border-bottom: 1.5px solid var(--border);
+  padding: 0 20px;
+}
+.segtab {
+  padding: 10px 0; margin-right: 22px;
+  font-size: 15px; font-weight: 500; color: var(--text3);
+  cursor: pointer; border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px; white-space: nowrap; transition: all 0.18s;
+  letter-spacing: -0.3px;
+}
+.segtab.on { color: var(--green); border-color: var(--green); font-weight: 700; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 390px; background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: flex-end; justify-content: space-around;
+  padding: 0 8px 22px; z-index: 200; height: 74px;
+}
+.nav-it {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; color: var(--text3); transition: color 0.15s;
+  padding-top: 10px;
+}
+.nav-it.on { color: var(--green); }
+.nav-it svg { width: 24px; height: 24px; }
+.nav-lbl { font-size: 10px; font-weight: 600; letter-spacing: -0.2px; }
+.nav-fab-wrap {
+  flex: 1; display: flex; justify-content: center; align-items: flex-start;
+}
+.nav-fab {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--green); color: white; border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; line-height: 1;
+  margin-top: -22px;
+  box-shadow: 0 4px 18px rgba(27,122,71,0.45);
+  cursor: pointer; transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.nav-fab:active { transform: scale(0.92); }
+
+/* ═══════════════ HOME ═══════════════ */
+
+/* 섹션 헤더 */
+.sec-h {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 16px 10px;
+}
+.sec-h-title { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.sec-h-more { font-size: 13px; color: var(--text3); cursor: pointer; display: flex; align-items: center; gap: 2px; }
+
+/* 큰 추천 카드 (실사 사진 배너) */
+.big-card {
+  margin: 0 16px;
+  border-radius: 16px; overflow: hidden;
+  cursor: pointer; position: relative;
+  box-shadow: var(--shadow-md);
+  height: 200px; background: #C8D8CE;
+}
+.big-card img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.big-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
+}
+.big-card-body {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 16px 18px 18px;
+}
+.big-card-title {
+  font-size: 20px; font-weight: 800; color: white;
+  line-height: 1.3; letter-spacing: -0.5px; margin-bottom: 5px;
+}
+.big-card-sub { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+.big-card-page {
+  position: absolute; bottom: 16px; right: 18px;
+  font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 600;
+  background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 10px;
+}
+
+/* 실시간 인기 피드 그리드 */
+.feed-row {
+  display: flex; gap: 8px; padding: 0 16px;
+  overflow-x: auto;
+}
+.feed-row::-webkit-scrollbar { display: none; }
+.feed-thumb-wrap {
+  flex-shrink: 0; width: 114px; cursor: pointer;
+}
+.feed-thumb-img {
+  width: 114px; height: 114px; border-radius: 12px; overflow: hidden;
+  position: relative; background: #D0D8D4;
+}
+.feed-thumb-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.feed-thumb-meta {
+  padding: 6px 2px 0;
+}
+.feed-thumb-cap {
+  font-size: 12px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.feed-thumb-sub {
+  display: flex; align-items: center; gap: 5px;
+}
+.feed-thumb-avatar {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0;
+}
+.feed-thumb-user { font-size: 11px; color: var(--text3); }
+.feed-thumb-likes { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 2px; margin-left: auto; }
+
+/* 오늘 현황 카드 */
+.today-card {
+  margin: 0 16px;
+  background: var(--white); border-radius: 14px; border: 1px solid var(--border);
+  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow);
+}
+.today-ring { position: relative; width: 58px; height: 58px; flex-shrink: 0; }
+.today-ring svg { transform: rotate(-90deg); }
+.ring-track { fill:none; stroke:#EEEEEE; stroke-width:5; }
+.ring-prog { fill:none; stroke:var(--green); stroke-width:5; stroke-linecap:round; stroke-dasharray:157; stroke-dashoffset:79; transition: stroke-dashoffset 1s ease; }
+.ring-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.ring-pct { font-size:14px; font-weight:900; color:var(--green); line-height:1; }
+.ring-lbl { font-size:8px; color:var(--text3); font-weight:600; }
+.today-body { flex:1; }
+.today-title { font-size:15px; font-weight:800; color:var(--text); letter-spacing:-0.4px; margin-bottom:2px; }
+.today-sub { font-size:12px; color:var(--text2); margin-bottom:8px; }
+.chip-row { display:flex; gap:5px; flex-wrap:wrap; }
+.chip {
+  font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px;
+  background:#F0F0F0; color:var(--text2);
+}
+.chip.done { background:var(--green-bg); color:var(--green); }
+
+/* 타임라인 */
+.tl-list { padding: 0 16px; }
+.tl-row { display:flex; gap:10px; align-items:flex-start; margin-bottom:8px; }
+.tl-col { display:flex; flex-direction:column; align-items:center; width:34px; flex-shrink:0; }
+.tl-dot {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--white); border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+}
+.tl-dot.done { border-color:var(--green); background:var(--green-bg); }
+.tl-dot.now  { border-color:#FF6B35; background:#FFF3EF; }
+.tl-line { width:1.5px; flex:1; min-height:10px; background:var(--border); margin-top:3px; }
+.tl-line.done { background:var(--green-border); }
+.tl-box {
+  flex:1; background:var(--white); border-radius:12px; border:1px solid var(--border);
+  padding:11px 13px; box-shadow:var(--shadow);
+}
+.tl-box.now { border-color:#FF6B35; }
+.tl-time { font-size:11px; color:var(--text3); margin-bottom:3px; font-weight:500; }
+.tl-name { font-size:14px; font-weight:700; color:var(--text); margin-bottom:8px; letter-spacing:-0.3px; }
+.tl-foot { display:flex; align-items:center; justify-content:space-between; }
+.tl-pct { font-size:20px; font-weight:900; color:var(--green); }
+.tl-wait { font-size:12px; font-weight:700; color:#FF6B35; }
+.tl-rec-btn {
+  background:#FF6B35; color:white; border:none;
+  padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;
+  cursor:pointer; font-family:inherit;
+}
+
+/* 주간 바 */
+.week-card {
+  margin: 4px 16px 16px;
+  background:var(--white); border-radius:14px; border:1px solid var(--border);
+  padding:14px 16px; box-shadow:var(--shadow);
+}
+.week-head { font-size:13px; font-weight:700; color:var(--text); margin-bottom:12px; }
+.bar-area { display:flex; align-items:flex-end; gap:5px; height:72px; }
+.bc { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.b { width:100%; border-radius:4px 4px 0 0; flex-shrink:0; }
+.b.hi { background:var(--green); }
+.b.md { background:#93CDB0; }
+.b.lo { background:#DDDDDD; }
+.bd { font-size:10px; color:var(--text3); font-weight:600; flex-shrink:0; }
+
+/* ═══════════════ RECORD ═══════════════ */
+.rec-nav {
+  background:var(--white); padding:12px 20px 14px;
+  border-bottom:1px solid var(--border);
+}
+.rec-back { display:flex; align-items:center; margin-bottom:14px; }
+.back-btn2 {
+  background:none; border:none; font-size:22px; cursor:pointer;
+  color:var(--text2); line-height:1; padding:0; margin-right:4px;
+}
+.rec-meal-kw {
+  font-size:13px; color:var(--text3); text-align:center;
+  display:flex; align-items:center; gap:5px; justify-content:center; margin-bottom:4px;
+}
+.rec-title2 { font-size:22px; font-weight:800; color:var(--text); text-align:center; letter-spacing:-0.6px; margin-bottom:3px; }
+.rec-sub2 { font-size:13px; color:var(--text3); text-align:center; }
+
+/* 완료 여부 카드 3종 */
+.status-trio { display:flex; gap:8px; padding:14px 16px 6px; }
+.s-card {
+  flex:1; background:var(--white); border:1.5px solid var(--border);
+  border-radius:14px; padding:16px 6px 13px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  cursor:pointer; transition:all 0.18s;
+}
+.s-card.sel { border-color:var(--green); background:var(--green-bg); }
+.s-card.sel .s-icon-bg { background:var(--green); }
+.s-card.sel .s-icon-bg svg { color:white; }
+.s-card.sel .s-label { color:var(--green); }
+.s-icon-bg {
+  width:44px; height:44px; border-radius:50%; background:#F0F0F0;
+  display:flex; align-items:center; justify-content:center; transition:all 0.18s;
+}
+.s-icon-bg svg { width:22px; height:22px; transition:color 0.18s; }
+.s-label { font-size:13px; font-weight:700; color:var(--text); }
+
+/* 사진 업로드 */
+.photo-area {
+  margin:8px 16px; background:var(--white); border:1.5px dashed var(--border);
+  border-radius:13px; padding:26px;
+  display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;
+}
+.photo-area svg { width:28px; height:28px; color:var(--text3); }
+.photo-lbl { font-size:13px; color:var(--text3); font-weight:500; }
+
+/* 폼 섹션 타이틀 */
+.form-title { font-size:14px; font-weight:700; color:var(--text); padding:12px 16px 7px; }
+
+/* 메모 */
+.memo-area { margin:0 16px; }
+.memo-ta {
+  width:100%; background:var(--white); border:1.5px solid var(--border);
+  border-radius:13px; padding:13px 14px; font-size:14px;
+  font-family:inherit; color:var(--text); resize:none; outline:none;
+  line-height:1.7; transition:border-color 0.18s;
+}
+.memo-ta:focus { border-color:var(--green); }
+.memo-cnt { text-align:right; font-size:11px; color:var(--text3); margin-top:5px; }
+
+/* 저장 버튼 */
+.save-cta {
+  margin:16px 16px;
+  background:var(--green); color:white; border:none; border-radius:14px;
+  width:calc(100% - 32px); padding:17px; font-size:16px; font-weight:800;
+  cursor:pointer; font-family:inherit; letter-spacing:-0.3px;
+  box-shadow:0 6px 20px rgba(27,122,71,0.38); transition:transform 0.15s;
+}
+.save-cta:active { transform:scale(0.98); }
+
+/* ═══════════════ UPLOAD MODAL ═══════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 500; display: none; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  width: 390px; background: var(--white); border-radius: 24px 24px 0 0;
+  padding: 0 0 32px; animation: slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width: 36px; height: 4px; background: #DDD; border-radius: 2px; margin: 12px auto 0; }
+.modal-title { font-size: 17px; font-weight: 800; color: var(--text); text-align: center; padding: 14px 20px 4px; letter-spacing: -0.4px; }
+.modal-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 20px; }
+.modal-opts { display: flex; flex-direction: column; gap: 0; padding: 0 16px; }
+.modal-opt {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 18px; border-radius: 14px; cursor: pointer;
+  transition: background 0.15s; margin-bottom: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+}
+.modal-opt:active { background: var(--green-bg); }
+.modal-opt-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.modal-opt-icon.cam { background: #FFF3EF; }
+.modal-opt-icon.vid { background: #EBF6F1; }
+.modal-opt-icon.gal { background: #EEF2FF; }
+.modal-opt-icon.rec { background: #FFF8E1; }
+.modal-opt-body {}
+.modal-opt-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; margin-bottom: 2px; }
+.modal-opt-desc { font-size: 12px; color: var(--text3); }
+.modal-cancel {
+  margin: 4px 16px 0; width: calc(100% - 32px);
+  padding: 14px; background: none; border: 1.5px solid var(--border);
+  border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--text2);
+  cursor: pointer; font-family: inherit;
+}
+
+/* ═══════════════ SHOP ═══════════════ */
+.shop-top {
+  background: var(--white); padding: 10px 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.shop-search-btn {
+  width: 38px; height: 38px; background: none; border: none;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.shop-search-btn svg { width: 22px; height: 22px; color: var(--text2); }
+.shop-banner {
+  margin: 12px 16px;
+  background: linear-gradient(120deg, var(--green-dark), var(--green));
+  border-radius: 16px; padding: 18px 20px;
+  display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+}
+.sb-txt { font-size: 19px; font-weight: 800; color: white; letter-spacing: -0.5px; line-height: 1.3; }
+.sb-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.sb-emo { font-size: 44px; }
+.prod-sec-title { font-size: 14px; font-weight: 800; color: var(--text); padding: 12px 16px 8px; letter-spacing: -0.3px; }
+.prod-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; margin: 0 16px 8px; box-shadow: var(--shadow); cursor: pointer;
+}
+.prod-thumb {
+  width: 56px; height: 56px; border-radius: 12px;
+  background: var(--green-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 28px; flex-shrink: 0;
+}
+.prod-info { flex: 1; }
+.prod-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; letter-spacing: -0.3px; }
+.prod-desc { font-size: 12px; color: var(--text3); margin-bottom: 5px; }
+.prod-price-row { display: flex; align-items: center; gap: 6px; }
+.prod-price { font-size: 16px; font-weight: 900; color: var(--green); letter-spacing: -0.5px; }
+.prod-og { font-size: 11px; color: var(--text3); text-decoration: line-through; }
+.prod-badge { font-size: 10px; background: #FFF0EB; color: #E8734A; padding: 2px 7px; border-radius: 8px; font-weight: 700; }
+.prod-ver { font-size: 10px; background: var(--green-bg); color: var(--green); padding: 2px 7px; border-radius: 8px; font-weight: 700; }
+.cart-btn {
+  width: 36px; height: 36px; border-radius: 10px; background: var(--green);
+  border: none; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; color: white; font-size: 18px;
+  transition: transform 0.15s;
+}
+.cart-btn:active { transform: scale(0.9); }
+
+/* ═══════════════ MY PAGE ═══════════════ */
+.my-top {
+  background: var(--white); padding: 10px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.my-top-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.my-profile-card {
+  margin: 12px 16px; background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow);
+}
+.my-avatar {
+  width: 62px; height: 62px; border-radius: 50%; background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;
+  border: 2px solid var(--green-border);
+}
+.my-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; margin-bottom: 2px; }
+.my-handle { font-size: 13px; color: var(--text3); margin-bottom: 8px; }
+.my-edit-btn {
+  padding: 7px 16px; border: 1.5px solid var(--green); border-radius: 20px;
+  background: none; color: var(--green); font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.my-stats { display: flex; gap: 10px; margin: 0 16px 10px; }
+.my-stat-card {
+  flex: 1; background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px; text-align: center; box-shadow: var(--shadow);
+}
+.my-stat-num { font-size: 24px; font-weight: 900; color: var(--green); letter-spacing: -1px; }
+.my-stat-lbl { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+.my-menu-card {
+  margin: 0 16px 8px; background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; box-shadow: var(--shadow);
+}
+.my-menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s;
+}
+.my-menu-item:last-child { border-bottom: none; }
+.my-menu-item:active { background: var(--bg); }
+.my-menu-icon { font-size: 20px; width: 32px; text-align: center; }
+.my-menu-txt { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+.my-menu-arr { font-size: 16px; color: var(--text3); }
+
+/* ═══════════════ TOAST ═══════════════ */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(0,0,0,0.82); color: white; padding: 10px 20px;
+  border-radius: 20px; font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all 0.3s; z-index: 600; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ═══════════════ RECORD - video preview ═══════════════ */
+.video-preview {
+  display: none; margin: 8px 16px; background: var(--green-bg);
+  border: 1.5px solid var(--green-border); border-radius: 13px; padding: 14px 16px;
+  align-items: center; gap: 12px;
+}
+.video-preview.show { display: flex; }
+.vid-icon { font-size: 28px; }
+.vid-info { flex: 1; }
+.vid-name { font-size: 13px; font-weight: 700; color: var(--green); }
+.vid-size { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.vid-del { background: none; border: none; font-size: 20px; color: var(--text3); cursor: pointer; }
+
+/* ═══════════════ REPORT - period picker ═══════════════ */
+.period-dropdown {
+  display: none; position: absolute; right: 16px; top: 50px;
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--shadow-md); z-index: 100; overflow: hidden; min-width: 120px;
+}
+.period-dropdown.open { display: block; }
+.pd-item {
+  padding: 12px 16px; font-size: 14px; font-weight: 600; color: var(--text);
+  cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.15s;
+}
+.pd-item:last-child { border-bottom: none; }
+.pd-item:hover { background: var(--green-bg); color: var(--green); }
+.pd-item.sel { color: var(--green); background: var(--green-bg); }
+.report-hd { position: relative; }
+
+/* ═══════════════ HOME SEGTABS ═══════════════ */
+.home-tab-content { display: none; }
+.home-tab-content.on { display: block; }
+  background:var(--white); padding:10px 20px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.report-hd-title { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-0.5px; }
+.report-period {
+  display:flex; align-items:center; gap:4px;
+  font-size:13px; color:var(--text2); font-weight:600; cursor:pointer; border:none; background:none; font-family:inherit;
+}
+.report-period svg { width:16px; height:16px; }
+
+.rp-sec-title { font-size:15px; font-weight:800; color:var(--text); padding:16px 16px 10px; letter-spacing:-0.4px; }
+
+/* 큰 스탯 카드 */
+.big-stat {
+  margin:0 16px 10px; background:var(--white); border:1px solid var(--border);
+  border-radius:16px; padding:16px 18px;
+  display:flex; align-items:center; gap:16px; box-shadow:var(--shadow);
+}
+.bs-left { flex:1; }
+.bs-label { font-size:12px; font-weight:600; color:var(--text2); margin-bottom:4px; }
+.bs-num { font-size:46px; font-weight:900; color:var(--green); letter-spacing:-2px; line-height:1; }
+.bs-unit { font-size:22px; font-weight:700; }
+.bs-sub { font-size:12px; color:var(--green); font-weight:600; margin-top:3px; }
+.bs-chart { flex:1; }
+
+/* 라인 차트 */
+.line-chart-wrap { position:relative; }
+.chart-y { position:absolute; top:0; left:0; height:72px; display:flex; flex-direction:column; justify-content:space-between; }
+.cy { font-size:9px; color:var(--text3); }
+.chart-labels { display:flex; justify-content:space-between; margin-top:4px; padding:0 2px; }
+.clb { font-size:10px; color:var(--text3); font-weight:600; }
+
+/* 작은 스탯 2개 */
+.small-stats { display:flex; gap:10px; margin:0 16px 10px; }
+.ss-card {
+  flex:1; background:var(--white); border:1px solid var(--border);
+  border-radius:14px; padding:14px 16px; box-shadow:var(--shadow);
+}
+.ss-lbl { font-size:12px; color:var(--text2); font-weight:600; margin-bottom:6px; }
+.ss-num { font-size:30px; font-weight:900; color:var(--green); letter-spacing:-1px; line-height:1; }
+.ss-unit2 { font-size:14px; font-weight:700; }
+.ss-sub { font-size:11px; color:var(--text3); margin-top:4px; }
+
+/* 랭킹 */
+.rank-list2 { padding:0 16px; }
+.rank-row {
+  background:var(--white); border:1px solid var(--border); border-radius:13px;
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px; margin-bottom:8px; box-shadow:var(--shadow);
+}
+.rk-num { font-size:16px; font-weight:900; color:var(--text3); width:18px; flex-shrink:0; }
+.rk-img {
+  width:46px; height:46px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  background:var(--green-bg);
+}
+.rk-img img { width:100%; height:100%; object-fit:cover; }
+.rk-name { flex:1; font-size:14px; font-weight:700; color:var(--text); letter-spacing:-0.3px; }
+.rk-pct { font-size:15px; font-weight:800; color:var(--green); }
+
+/* ═══════════════ COMMUNITY ═══════════════ */
+.comm-hd {
+  background:var(--white); padding:10px 20px 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.comm-title { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-0.5px; padding-bottom:10px; }
+.comm-icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.comm-icon svg { width:22px; height:22px; color:var(--text2); }
+
+.search-wrap {
+  background:var(--white); padding:10px 16px 12px;
+  border-bottom:1px solid var(--border);
+}
+.search-inner {
+  display:flex; align-items:center; gap:8px;
+  background:var(--bg); border-radius:12px; padding:10px 14px;
+}
+.search-inner input {
+  flex:1; background:none; border:none; outline:none;
+  font-size:14px; font-family:inherit; color:var(--text);
+}
+.search-inner svg { width:16px; height:16px; color:var(--text3); flex-shrink:0; }
+
+.tag-row { display:flex; gap:7px; padding:10px 16px; overflow-x:auto; }
+.tag-row::-webkit-scrollbar { display:none; }
+.tagpill {
+  white-space:nowrap; padding:6px 14px; border-radius:20px;
+  background:var(--white); border:1.5px solid var(--border);
+  font-size:12px; font-weight:700; color:var(--text2);
+  cursor:pointer; flex-shrink:0; box-shadow:var(--shadow);
+}
+.tagpill.on { background:var(--green); color:white; border-color:var(--green); }
+
+/* 그룹 리스트 (petcamp 스타일) */
+.group-wrap {
+  background:var(--white); margin:0 16px; border-radius:14px;
+  border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow);
+  padding:0 14px;
+}
+.group-row {
+  display:flex; align-items:center; gap:12px;
+  padding:13px 0; border-bottom:1px solid var(--border);
+}
+.group-row:last-child { border-bottom:none; }
+.group-thumb2 {
+  width:50px; height:50px; border-radius:12px; overflow:hidden; flex-shrink:0;
+  background:var(--green-bg);
+}
+.group-thumb2 img { width:100%; height:100%; object-fit:cover; }
+.group-body { flex:1; }
+.group-name2 { font-size:14px; font-weight:700; color:var(--text); margin-bottom:2px; letter-spacing:-0.3px; }
+.group-cnt { font-size:12px; color:var(--text3); margin-bottom:1px; }
+.group-desc2 { font-size:12px; color:var(--text2); }
+.join-btn {
+  background:var(--green); color:white; border:none; border-radius:8px;
+  padding:7px 16px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:inherit; flex-shrink:0; white-space:nowrap;
+}
+.join-btn.in { background:white; color:var(--green); border:1.5px solid var(--green); }
+
+/* 피드 포스트 */
+.feed-post3 {
+  background:var(--white); margin:8px 16px; border-radius:14px;
+  overflow:hidden; box-shadow:var(--shadow); border:1px solid var(--border);
+}
+.fp-head {
+  display:flex; align-items:center; gap:10px; padding:12px 14px 10px;
+}
+.fp-ava {
+  width:36px; height:36px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  background:var(--green-bg);
+}
+.fp-ava img { width:100%; height:100%; object-fit:cover; }
+.fp-name { font-size:13px; font-weight:700; color:var(--text); }
+.fp-time { font-size:11px; color:var(--text3); }
+.fp-pet { margin-left:auto; background:var(--green-bg); color:var(--green); font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; }
+.fp-img { width:100%; height:200px; overflow:hidden; }
+.fp-img img { width:100%; height:100%; object-fit:cover; display:block; }
+.fp-body { padding:10px 14px 12px; }
+.fp-txt { font-size:13px; color:var(--text); line-height:1.65; margin-bottom:7px; }
+.fp-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:9px; }
+.fptag { font-size:12px; color:var(--green); font-weight:700; }
+.fp-acts { display:flex; gap:14px; padding-top:9px; border-top:1px solid var(--border); }
+.fp-act { font-size:12px; color:var(--text2); font-weight:600; cursor:pointer; display:flex; align-items:center; gap:4px; }
+.fp-act.liked { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- ══════════════════════════════════════
+     HOME
+══════════════════════════════════════ -->
+<div id="s-home" class="screen active">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="top-bar">
+    <div class="logo">Dan Q</div>
+    <div class="top-icons">
+      <button class="top-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+    </div>
+  </div>
+  <div class="segtabs">
+    <div class="segtab on">홈</div>
+    <div class="segtab">피드</div>
+    <div class="segtab">캠</div>
+    <div class="segtab">스토어</div>
+    <div class="segtab">더보기</div>
+  </div>
+
+  <div class="scroll">
+
+    <!-- 오늘의 추천 BIG CARD -->
+    <div class="sec-h">
+      <span class="sec-h-title">오늘의 추천</span>
+      <span class="sec-h-more">더보기 ›</span>
+    </div>
+    <div class="big-card">
+      <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=85&fit=crop" alt="강아지와 함께하는 주말 피크닉" onerror="this.parentElement.style.background='linear-gradient(135deg,#2D7A4F,#4CAF7D)';this.style.display='none'">
+      <div class="big-card-overlay"></div>
+      <div class="big-card-body">
+        <div class="big-card-title">두부와 함께하는<br>주말 피크닉 코스</div>
+        <div class="big-card-sub">반려견과 가기 좋은<br>서울 근교 명소 5곳</div>
+      </div>
+      <div class="big-card-page">1/5</div>
+    </div>
+
+    <!-- 실시간 인기 피드 -->
+    <div class="sec-h" style="margin-top:14px;">
+      <span class="sec-h-title">실시간 인기 피드</span>
+      <span class="sec-h-more">더보기 ›</span>
+    </div>
+    <div class="feed-row">
+      <div class="feed-thumb-wrap">
+        <div class="feed-thumb-img">
+          <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=300&q=80&fit=crop" alt="바다 처음 본 날" onerror="this.parentElement.style.background='#C5E8D5';this.style.display='none'">
+        </div>
+        <div class="feed-thumb-meta">
+          <div class="feed-thumb-cap">바다 처음 본 날</div>
+          <div class="feed-thumb-sub">
+            <div class="feed-thumb-avatar">🐩</div>
+            <span class="feed-thumb-user">토리눈나</span>
+            <div class="feed-thumb-likes">♡ 128</div>
+          </div>
+        </div>
+      </div>
+      <div class="feed-thumb-wrap">
+        <div class="feed-thumb-img">
+          <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=300&q=80&fit=crop" alt="새 장난감 개봉기" onerror="this.parentElement.style.background='#F5E6C0';this.style.display='none'">
+        </div>
+        <div class="feed-thumb-meta">
+          <div class="feed-thumb-cap">새 장난감 개봉기</div>
+          <div class="feed-thumb-sub">
+            <div class="feed-thumb-avatar">🦮</div>
+            <span class="feed-thumb-user">홍치맘</span>
+            <div class="feed-thumb-likes">♡ 96</div>
+          </div>
+        </div>
+      </div>
+      <div class="feed-thumb-wrap">
+        <div class="feed-thumb-img">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=300&q=80&fit=crop" alt="산책은 언제나 즐거워" onerror="this.parentElement.style.background='#FFD6D6';this.style.display='none'">
+        </div>
+        <div class="feed-thumb-meta">
+          <div class="feed-thumb-cap">산책은 언제나 즐거워</div>
+          <div class="feed-thumb-sub">
+            <div class="feed-thumb-avatar">🐶</div>
+            <span class="feed-thumb-user">쿠키아빠</span>
+            <div class="feed-thumb-likes">♡ 73</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 오늘 두부 현황 -->
+    <div class="sec-h" style="margin-top:14px;"><span class="sec-h-title">🍽️ 오늘의 식사 현황</span></div>
+    <div class="today-card">
+      <div class="today-ring">
+        <svg width="58" height="58" viewBox="0 0 58 58">
+          <circle class="ring-track" cx="29" cy="29" r="25"/>
+          <circle class="ring-prog" id="homeRing" cx="29" cy="29" r="25"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct">50%</div>
+          <div class="ring-lbl">완료</div>
+        </div>
+      </div>
+      <div class="today-body">
+        <div class="today-title">두부의 오늘</div>
+        <div class="today-sub">3번 중 1번 식사 완료</div>
+        <div class="chip-row">
+          <span class="chip done">아침 ✓</span>
+          <span class="chip">점심 대기</span>
+          <span class="chip">저녁 예정</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 타임라인 -->
+    <div class="sec-h" style="margin-top:4px;"><span class="sec-h-title">식사 타임라인</span></div>
+    <div class="tl-list">
+      <div class="tl-row">
+        <div class="tl-col">
+          <div class="tl-dot done">🌅</div>
+          <div class="tl-line done"></div>
+        </div>
+        <div class="tl-box">
+          <div class="tl-time">오전 8:00 · 아침</div>
+          <div class="tl-name">닭가슴살 사료 + 산양유</div>
+          <div class="tl-foot">
+            <div class="tl-pct">100%</div>
+            <span style="font-size:20px;">✅</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col">
+          <div class="tl-dot now">☀️</div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-box now">
+          <div class="tl-time">오후 1:00 · 점심</div>
+          <div class="tl-name">연어 오일 토핑 스페셜</div>
+          <div class="tl-foot">
+            <span class="tl-wait">기록 대기중</span>
+            <button class="tl-rec-btn" onclick="goTo('s-record')">기록하기 →</button>
+          </div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-col">
+          <div class="tl-dot">🌙</div>
+        </div>
+        <div class="tl-box">
+          <div class="tl-time">오후 7:00 · 저녁</div>
+          <div class="tl-name">소고기 + 고구마 퓨레</div>
+          <div class="tl-foot">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">예정됨</span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주간 바 차트 -->
+    <div class="week-card">
+      <div class="week-head">이번 주 완식률 <span style="color:var(--green);font-size:11px;font-weight:700;">+12% 개선 중 ↑</span></div>
+      <div class="bar-area">
+        <div class="bc"><div class="b md" style="height:38px;"></div><div class="bd">월</div></div>
+        <div class="bc"><div class="b md" style="height:48px;"></div><div class="bd">화</div></div>
+        <div class="bc"><div class="b hi" style="height:56px;"></div><div class="bd">수</div></div>
+        <div class="bc"><div class="b hi" style="height:46px;"></div><div class="bd">목</div></div>
+        <div class="bc"><div class="b md" style="height:30px;"></div><div class="bd">금</div></div>
+        <div class="bc"><div class="b hi" style="height:56px;"></div><div class="bd">토</div></div>
+        <div class="bc"><div class="b lo" style="height:12px;"></div><div class="bd">일</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     RECORD
+══════════════════════════════════════ -->
+<div id="s-record" class="screen" style="background:var(--bg);">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="rec-nav">
+    <div class="rec-back">
+      <button class="back-btn2" onclick="goTo('s-home')">‹</button>
+    </div>
+    <div class="rec-meal-kw">☀️ 점심</div>
+    <div class="rec-title2">식사 기록</div>
+    <div class="rec-sub2">연어 오일 토핑 스페셜</div>
+    <div class="rec-sub2" style="margin-top:2px;">예정 시간: 오후 1:00</div>
+  </div>
+
+  <div class="scroll">
+    <div class="form-title">식사 완료 여부</div>
+    <div class="status-trio">
+      <div class="s-card sel" onclick="selStatus(this)">
+        <div class="s-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="s-label">완료</div>
+      </div>
+      <div class="s-card" onclick="selStatus(this)">
+        <div class="s-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="s-label">일부 남김</div>
+      </div>
+      <div class="s-card" onclick="selStatus(this)">
+        <div class="s-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="s-label">먹지 않음</div>
+      </div>
+    </div>
+
+    <div class="form-title">사진 기록 <span style="color:var(--text3);font-weight:400;">(선택)</span></div>
+    <div class="photo-area">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div class="photo-lbl">사진 추가하기</div>
+    </div>
+
+    <div class="form-title">메모 <span style="color:var(--text3);font-weight:400;">(선택)</span></div>
+    <div class="memo-area">
+      <textarea class="memo-ta" rows="4" placeholder="식사량, 반응, 특이사항 등을 기록해주세요." oninput="cntMemo(this)"></textarea>
+      <div class="memo-cnt"><span id="mc">0</span>/200</div>
+    </div>
+
+    <button class="save-cta" onclick="saveRecord()">기록 저장</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     REPORT
+══════════════════════════════════════ -->
+<div id="s-report" class="screen" style="background:var(--bg);">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="report-hd">
+    <div class="report-hd-title">리포트</div>
+    <button class="report-period">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      이번 주 ∨
+    </button>
+  </div>
+
+  <div class="scroll">
+    <div class="rp-sec-title">두부의 식사 현황</div>
+
+    <!-- 큰 스탯 + 차트 -->
+    <div class="big-stat">
+      <div class="bs-left">
+        <div class="bs-label">식사 완료율</div>
+        <div class="bs-num">85<span class="bs-unit">%</span></div>
+        <div class="bs-sub">지난 주 대비 +15%</div>
+      </div>
+      <div class="bs-chart">
+        <div class="line-chart-wrap">
+          <div class="chart-y">
+            <span class="cy">100%</span>
+            <span class="cy">50%</span>
+            <span class="cy">0%</span>
+          </div>
+          <svg width="148" height="72" viewBox="0 0 148 72" style="margin-left:30px;display:block;">
+            <defs>
+              <linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1B7A47" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#1B7A47" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,50 L21,40 L42,33 L63,28 L84,36 L105,20 L126,14 L148,8" fill="none" stroke="#1B7A47" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0,50 L21,40 L42,33 L63,28 L84,36 L105,20 L126,14 L148,8 L148,72 L0,72Z" fill="url(#lg1)"/>
+            <circle cx="148" cy="8" r="3.5" fill="#1B7A47"/>
+          </svg>
+        </div>
+        <div class="chart-labels" style="padding-left:32px;">
+          <span class="clb">월</span><span class="clb">화</span><span class="clb">수</span>
+          <span class="clb">목</span><span class="clb">금</span><span class="clb">토</span><span class="clb">일</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 작은 스탯 2개 -->
+    <div class="small-stats">
+      <div class="ss-card">
+        <div class="ss-lbl">총 식사 횟수</div>
+        <div class="ss-num">14<span class="ss-unit2">회</span></div>
+        <div class="ss-sub">하루 평균 2.0회</div>
+      </div>
+      <div class="ss-card">
+        <div class="ss-lbl">평균 식사 시간</div>
+        <div class="ss-num">12<span class="ss-unit2">분</span></div>
+        <div class="ss-sub">지난 주 대비 -2분</div>
+      </div>
+    </div>
+
+    <!-- TOP 3 -->
+    <div class="rp-sec-title">선호 식단 TOP 3</div>
+    <div class="rank-list2">
+      <div class="rank-row">
+        <div class="rk-num">1</div>
+        <div class="rk-img">
+          <img src="https://images.unsplash.com/photo-1615361200141-f45040f367be?w=100&q=80&fit=crop" alt="연어" onerror="this.parentElement.style.background='#C5E8D5';this.style.display='none'">
+        </div>
+        <div class="rk-name">연어 오일 토핑 스페셜</div>
+        <div class="rk-pct">92%</div>
+      </div>
+      <div class="rank-row">
+        <div class="rk-num">2</div>
+        <div class="rk-img">
+          <img src="https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=100&q=80&fit=crop" alt="닭" onerror="this.parentElement.style.background='#FFF3D6';this.style.display='none'">
+        </div>
+        <div class="rk-name">닭가슴살 사료 + 산양유</div>
+        <div class="rk-pct">85%</div>
+      </div>
+      <div class="rank-row">
+        <div class="rk-num">3</div>
+        <div class="rk-img">
+          <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=100&q=80&fit=crop" alt="소고기" onerror="this.parentElement.style.background='#FFD6D6';this.style.display='none'">
+        </div>
+        <div class="rk-name">소고기 야채 믹스</div>
+        <div class="rk-pct">78%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     COMMUNITY
+══════════════════════════════════════ -->
+<div id="s-community" class="screen" style="background:var(--bg);">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="comm-hd" style="border-bottom:1px solid var(--border);">
+    <div class="comm-title">그룹</div>
+    <div class="comm-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+  </div>
+  <div class="segtabs">
+    <div class="segtab on">추천 그룹</div>
+    <div class="segtab">내 그룹</div>
+  </div>
+
+  <div class="scroll">
+    <div class="search-wrap">
+      <div class="search-inner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="그룹 이름으로 검색">
+      </div>
+    </div>
+
+    <!-- 그룹 리스트 (petcamp 스타일) -->
+    <div class="sec-h">
+      <span class="sec-h-title">지금 뜨는 그룹</span>
+      <span class="sec-h-more">더보기 ›</span>
+    </div>
+    <div class="group-wrap">
+      <div class="group-row">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐕';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">댕댕이 산책 친구들</div>
+          <div class="group-cnt">멤버 1,234명</div>
+          <div class="group-desc2">매일 산책 인증해요!</div>
+        </div>
+        <button class="join-btn">가입</button>
+      </div>
+      <div class="group-row">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐾';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">강아지 훈련 교실</div>
+          <div class="group-cnt">멤버 856명</div>
+          <div class="group-desc2">훈련 팁과 꿀팁을 공유해요</div>
+        </div>
+        <button class="join-btn">가입</button>
+      </div>
+      <div class="group-row">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='📸';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">반려견 사진 모임</div>
+          <div class="group-cnt">멤버 2,031명</div>
+          <div class="group-desc2">사진 찍는 걸 좋아하는 모임</div>
+        </div>
+        <button class="join-btn in">가입중</button>
+      </div>
+      <div class="group-row">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🦴';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">소형견 모여라</div>
+          <div class="group-cnt">멤버 1,102명</div>
+          <div class="group-desc2">소형견 키우는 보호자 모임</div>
+        </div>
+        <button class="join-btn">가입</button>
+      </div>
+      <div class="group-row">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐶';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">다견가정 모임</div>
+          <div class="group-cnt">멤버 623명</div>
+          <div class="group-desc2">다가정 반려인 모임</div>
+        </div>
+        <button class="join-btn">가입</button>
+      </div>
+    </div>
+
+    <!-- 피드 포스트 -->
+    <div class="sec-h" style="margin-top:14px;"><span class="sec-h-title">📸 사용자 피드</span></div>
+    <div class="feed-post3">
+      <div class="fp-head">
+        <div class="fp-ava">
+          <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=80&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐩'">
+        </div>
+        <div>
+          <div class="fp-name">뽀미맘</div>
+          <div class="fp-time">3분 전</div>
+        </div>
+        <div class="fp-pet">포메라니안</div>
+      </div>
+      <div class="fp-img">
+        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=85&fit=crop" alt="산책" onerror="this.style.background='#C5E8D5';this.style.height='200px';this.style.display='flex'">
+      </div>
+      <div class="fp-body">
+        <div class="fp-txt">오늘 드디어 뽀미가 100% 완식했어요!! 연어 오일 토핑 조합이 정답인 것 같아요 🎉</div>
+        <div class="fp-tags">
+          <span class="fptag">#완식성공</span>
+          <span class="fptag">#연어키트</span>
+          <span class="fptag">#PetHealth</span>
+        </div>
+        <div class="fp-acts">
+          <div class="fp-act liked">♥ 128</div>
+          <div class="fp-act">💬 댓글 14</div>
+          <div class="fp-act">↗️ 공유</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feed-post3">
+      <div class="fp-head">
+        <div class="fp-ava">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=80&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🦮'">
+        </div>
+        <div>
+          <div class="fp-name">코코아빠</div>
+          <div class="fp-time">1시간 전</div>
+        </div>
+        <div class="fp-pet">골든리트리버</div>
+      </div>
+      <div class="fp-img">
+        <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=800&q=85&fit=crop" alt="강아지" onerror="this.style.background='#FFF3D6';this.style.height='200px'">
+      </div>
+      <div class="fp-body">
+        <div class="fp-txt">코코아 드디어 사료 유목민 탈출했어요 😭 3주째 닭 + 산양유 조합으로 안정적. 다들 이 조합 강추!</div>
+        <div class="fp-tags">
+          <span class="fptag">#닭가슴살</span>
+          <span class="fptag">#산양유</span>
+          <span class="fptag">#사료유목민탈출</span>
+        </div>
+        <div class="fp-acts">
+          <div class="fp-act">♡ 94</div>
+          <div class="fp-act">💬 댓글 8</div>
+          <div class="fp-act">↗️ 공유</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ BOTTOM NAV ══════ -->
+<div class="bottom-nav">
+  <div class="nav-it on" id="n-home" onclick="goTo('s-home')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span class="nav-lbl">홈</span>
+  </div>
+  <div class="nav-it" id="n-report" onclick="goTo('s-report')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span class="nav-lbl">리포트</span>
+  </div>
+  <div class="nav-fab-wrap">
+    <button class="nav-fab" onclick="openUploadModal()">＋</button>
+  </div>
+  <div class="nav-it" id="n-shop" onclick="goTo('s-shop')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.74L22 7H6"/></svg>
+    <span class="nav-lbl">탐색</span>
+  </div>
+  <div class="nav-it" id="n-comm" onclick="goTo('s-community')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    <span class="nav-lbl">그룹</span>
+  </div>
+  <div class="nav-it" id="n-my" onclick="goTo('s-my')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="nav-lbl">마이</span>
+  </div>
+</div>
+
+</div>
+
+<script>
+const navMap = {
+  's-home': 'n-home',
+  's-record': null,
+  's-report': 'n-report',
+  's-community': 'n-comm'
+};
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-it').forEach(n => n.classList.remove('on'));
+  const nid = navMap[id];
+  if (nid) document.getElementById(nid).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+function selStatus(el) {
+  document.querySelectorAll('.s-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function cntMemo(el) {
+  const v = Math.min(el.value.length, 200);
+  document.getElementById('mc').textContent = v;
+  if (el.value.length > 200) el.value = el.value.slice(0,200);
+}
+
+function saveRecord() {
+  alert('기록이 저장되었어요! 🎉');
+  goTo('s-report');
+}
+
+// 링 초기화
+setTimeout(() => {
+  const r = document.getElementById('homeRing');
+  if (r) {
+    const c = 2 * Math.PI * 25;
+    r.style.strokeDasharray = c;
+    r.style.strokeDashoffset = c * 0.5;
+  }
+}, 300);
+</script>
+</body>
+</html>
