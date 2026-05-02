@@ -1,0 +1,2569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan Q</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --accent: #26c6b0;
+  --accent-dark: #1fa897;
+  --accent-soft: #e8faf8;
+  --green: #1b7a47;
+  --green-dark: #145c35;
+  --green-mid: #3fa86e;
+  --green-bg: #ebf6f1;
+  --green-border: #c2e0d1;
+  --text: #121418;
+  --text2: #4a5056;
+  --text3: #8c939b;
+  --border: #e8eaec;
+  --bg: #f4f6f8;
+  --white: #ffffff;
+  --red: #e84848;
+  --orange: #ff7043;
+  --orange-soft: #fff4ef;
+  --shadow: 0 1px 3px rgba(18, 24, 32, 0.06);
+  --shadow-md: 0 8px 24px rgba(18, 24, 32, 0.08);
+}
+
+body {
+  background: #e9eef1;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex; justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh; padding: 24px 16px 40px;
+}
+
+/* ── PHONE SHELL ── */
+.phone {
+  width: 390px;
+  max-width: 100%;
+  min-height: 844px;
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+/* ── STATUS BAR ── */
+.status {
+  background: var(--white);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 26px 8px;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.3px;
+}
+.status-r { display: flex; align-items: center; gap: 6px; }
+.status-r svg { width: 15px; height: 15px; }
+
+/* ── SCREENS ── */
+.screen { display: none; flex-direction: column; min-height: 844px; }
+.screen.active { display: flex; animation: fadein 0.2s ease; }
+@keyframes fadein { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SCROLL ── */
+.scroll { flex:1; overflow-y:auto; padding-bottom: 96px; -webkit-overflow-scrolling: touch; }
+.scroll::-webkit-scrollbar { display:none; }
+
+/* ── TOP HEADER ── */
+.top-bar {
+  background: var(--white);
+  padding: 8px 20px 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1;
+  padding-bottom: 8px;
+  color: var(--text);
+}
+.logo span {
+  color: var(--accent);
+}
+.top-icons { display: flex; align-items: center; gap: 4px; }
+.top-icon-btn {
+  width: 38px; height: 38px; background: none; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border-radius: 50%; position: relative;
+  color: var(--text); transition: background 0.15s;
+}
+.top-icon-btn:hover { background: var(--bg); }
+.notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--red);
+  border: 1.5px solid white;
+}
+
+/* ── SEGMENT ── */
+.segtabs {
+  background: var(--white);
+  display: flex;
+  border-bottom: 1.5px solid var(--border);
+  padding: 0 20px;
+}
+.segtab {
+  padding: 10px 0; margin-right: 22px;
+  font-size: 15px; font-weight: 500; color: var(--text3);
+  cursor: pointer; border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px; white-space: nowrap; transition: all 0.18s;
+  letter-spacing: -0.3px;
+}
+.segtab.on {
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* ── BOTTOM NAV: 5칸 그리드 · + 정중앙 (홈·리포트 | + | 그룹·마이) ── */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr 76px 1fr 1fr;
+  align-items: flex-end;
+  justify-items: center;
+  padding: 8px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+  min-height: 72px;
+  border-radius: 0 0 44px 44px;
+}
+.nav-it {
+  width: 100%;
+  max-width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--text3);
+  transition: color 0.15s;
+  padding: 6px 4px 2px;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.nav-it.on {
+  color: var(--accent);
+}
+.nav-it svg {
+  width: 22px;
+  height: 22px;
+}
+.nav-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.12px;
+}
+.nav-fab-slot {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 76px;
+}
+.nav-fab {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  line-height: 1;
+  margin-top: -22px;
+  box-shadow: 0 6px 18px rgba(38, 198, 176, 0.42);
+  cursor: pointer;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.nav-fab:active {
+  transform: scale(0.93);
+}
+
+/* ═══════════════ HOME ═══════════════ */
+
+/* 섹션 헤더 */
+.sec-h {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 16px 10px;
+}
+.sec-h-title { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.sec-h-more { font-size: 13px; color: var(--text3); cursor: pointer; display: flex; align-items: center; gap: 2px; }
+
+/* 홈 히어로 — 카피 + 반려묘·반려견 비주얼 (배너형 오버레이 없음) */
+.home-hero {
+  margin: 10px 16px 16px;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 168px;
+}
+.home-hero-copy {
+  padding: 18px 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  letter-spacing: -0.2px;
+}
+.hero-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.35;
+  letter-spacing: -0.6px;
+}
+.hero-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.55;
+  font-weight: 500;
+}
+.home-hero-visual {
+  position: relative;
+  background: linear-gradient(160deg, var(--accent-soft) 0%, #f0f4f8 100%);
+  min-height: 168px;
+}
+.home-hero-visual img {
+  position: absolute;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 6px 16px rgba(18, 24, 32, 0.12);
+}
+.hero-img-cat {
+  width: 58%;
+  height: 72%;
+  left: 8%;
+  bottom: 10%;
+  z-index: 2;
+}
+.hero-img-dog {
+  width: 52%;
+  height: 58%;
+  right: 6%;
+  top: 12%;
+  z-index: 1;
+}
+
+/* 실시간 인기 피드 그리드 */
+.feed-row {
+  display: flex; gap: 8px; padding: 0 16px;
+  overflow-x: auto;
+}
+.feed-row::-webkit-scrollbar { display: none; }
+.feed-thumb-wrap {
+  flex-shrink: 0; width: 114px; cursor: pointer;
+}
+.feed-thumb-img {
+  width: 114px; height: 114px; border-radius: 12px; overflow: hidden;
+  position: relative; background: #D0D8D4;
+}
+.feed-thumb-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.feed-thumb-meta {
+  padding: 6px 2px 0;
+}
+.feed-thumb-cap {
+  font-size: 12px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.feed-thumb-sub {
+  display: flex; align-items: center; gap: 5px;
+}
+.feed-thumb-avatar {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0;
+}
+.feed-thumb-user { font-size: 11px; color: var(--text3); }
+.feed-thumb-likes { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 2px; margin-left: auto; }
+
+/* 오늘 현황 카드 */
+.today-card {
+  margin: 0 16px;
+  background: var(--white); border-radius: 14px; border: 1px solid var(--border);
+  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow);
+}
+.today-ring { position: relative; width: 58px; height: 58px; flex-shrink: 0; }
+.today-ring svg { transform: rotate(-90deg); }
+.ring-track { fill:none; stroke:#EEEEEE; stroke-width:5; }
+.ring-prog {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 157;
+  stroke-dashoffset: 79;
+  transition: stroke-dashoffset 1s ease;
+}
+.ring-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.ring-pct {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--accent-dark);
+  line-height: 1;
+}
+.ring-lbl { font-size:8px; color:var(--text3); font-weight:600; }
+.today-body { flex:1; }
+.today-title { font-size:15px; font-weight:800; color:var(--text); letter-spacing:-0.4px; margin-bottom:2px; }
+.today-sub { font-size:12px; color:var(--text2); margin-bottom:8px; }
+.chip-row { display:flex; gap:5px; flex-wrap:wrap; }
+.chip {
+  font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px;
+  background:#F0F0F0; color:var(--text2);
+}
+.chip.done {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+/* 오늘 식사 + 주간 차트 통합 카드 */
+.care-suite {
+  margin: 10px 16px 18px;
+  background: linear-gradient(165deg, #ffffff 0%, #f8fafb 50%, #f4f7f8 100%);
+  border-radius: 22px;
+  border: 1px solid rgba(18, 24, 32, 0.06);
+  box-shadow:
+    0 10px 40px rgba(18, 24, 32, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  padding: 18px 16px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.care-suite::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), #4dd4c0 40%, rgba(255, 112, 67, 0.85));
+  opacity: 0.85;
+}
+.care-suite-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.care-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(18, 24, 32, 0.12);
+  border: 2px solid #fff;
+}
+.care-suite-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.55px;
+  line-height: 1.2;
+}
+.care-suite-sub {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 600;
+  margin-top: 4px;
+  letter-spacing: -0.15px;
+}
+
+.meal-flow {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.meal-row {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+}
+.meal-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+  flex-shrink: 0;
+  padding-top: 16px;
+  position: relative;
+}
+.meal-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #dde1e6;
+  background: #fff;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.meal-dot--done {
+  border-color: var(--accent-dark);
+  background: linear-gradient(145deg, #3dd4bf, var(--accent-dark));
+  box-shadow: 0 0 0 5px rgba(38, 198, 176, 0.18);
+}
+.meal-dot--now {
+  border-width: 2px;
+  border-color: var(--orange);
+  background: #fff;
+  box-shadow: 0 0 0 5px rgba(255, 112, 67, 0.15);
+}
+.meal-line {
+  flex: 1;
+  width: 3px;
+  min-height: 18px;
+  margin-top: 6px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #e8ecf0 0%, #eef1f4 100%);
+}
+.meal-line--done {
+  background: linear-gradient(180deg, rgba(38, 198, 176, 0.45) 0%, rgba(38, 198, 176, 0.15) 100%);
+}
+.meal-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  border: 1px solid rgba(18, 24, 32, 0.06);
+  padding: 15px 16px 14px;
+  box-shadow: 0 2px 12px rgba(18, 24, 32, 0.04);
+  position: relative;
+}
+.meal-card--done {
+  border-left: 3px solid var(--accent);
+}
+.meal-card--active {
+  border-color: rgba(255, 112, 67, 0.35);
+  box-shadow:
+    0 8px 28px rgba(255, 112, 67, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+.meal-meta {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  margin-bottom: 8px;
+  letter-spacing: -0.1px;
+}
+.meal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.4px;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+.meal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.meal-pct {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent-dark);
+  letter-spacing: -0.8px;
+}
+.meal-check {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #3dd4bf, var(--accent-dark));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(38, 198, 176, 0.35);
+}
+.meal-wait {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: -0.2px;
+}
+.meal-rec-btn {
+  background: linear-gradient(145deg, #ff8a65, var(--orange));
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgba(255, 112, 67, 0.35);
+}
+.meal-scheduled {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: -0.15px;
+}
+
+.care-suite-chart {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(18, 24, 32, 0.06);
+}
+.week-head {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 14px;
+  letter-spacing: -0.35px;
+}
+.week-head span.stat-note {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  margin-left: 8px;
+}
+.bar-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 76px;
+  padding: 0 2px;
+  border-bottom: 1px solid rgba(18, 24, 32, 0.06);
+}
+.bc {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.b {
+  width: 100%;
+  max-width: 28px;
+  margin: 0 auto;
+  border-radius: 8px 8px 3px 3px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.b.hi {
+  background: linear-gradient(180deg, #1a9e8c 0%, #147a6d 100%);
+  box-shadow: 0 4px 12px rgba(26, 158, 140, 0.28);
+}
+.b.md {
+  background: linear-gradient(180deg, #8fd9cd 0%, #5ec4b5 100%);
+  box-shadow: 0 3px 10px rgba(94, 196, 181, 0.22);
+}
+.b.lo {
+  background: linear-gradient(180deg, #eceff2 0%, #dfe3e8 100%);
+}
+.bd {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -0.2px;
+}
+
+/* ═══════════════ RECORD ═══════════════ */
+.rec-nav {
+  background:var(--white); padding:12px 20px 14px;
+  border-bottom:1px solid var(--border);
+}
+.rec-back { display:flex; align-items:center; margin-bottom:14px; }
+.back-btn2 {
+  background:none; border:none; font-size:22px; cursor:pointer;
+  color:var(--text2); line-height:1; padding:0; margin-right:4px;
+}
+.rec-meal-kw {
+  font-size:13px; color:var(--text3); text-align:center;
+  display:flex; align-items:center; gap:5px; justify-content:center; margin-bottom:4px;
+}
+.rec-title2 { font-size:22px; font-weight:800; color:var(--text); text-align:center; letter-spacing:-0.6px; margin-bottom:3px; }
+.rec-sub2 { font-size:13px; color:var(--text3); text-align:center; }
+
+/* 완료 여부 카드 3종 */
+.status-trio { display:flex; gap:8px; padding:14px 16px 6px; }
+.s-card {
+  flex:1; background:var(--white); border:1.5px solid var(--border);
+  border-radius:14px; padding:16px 6px 13px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  cursor:pointer; transition:all 0.18s;
+}
+.s-card.sel {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.s-card.sel .s-icon-bg {
+  background: var(--accent);
+}
+.s-card.sel .s-icon-bg svg {
+  color: #fff;
+}
+.s-card.sel .s-label {
+  color: var(--accent-dark);
+}
+.s-icon-bg {
+  width:44px; height:44px; border-radius:50%; background:#F0F0F0;
+  display:flex; align-items:center; justify-content:center; transition:all 0.18s;
+}
+.s-icon-bg svg { width:22px; height:22px; transition:color 0.18s; }
+.s-label { font-size:13px; font-weight:700; color:var(--text); }
+
+/* 사진 업로드 */
+.photo-area {
+  margin:8px 16px; background:var(--white); border:1.5px dashed var(--border);
+  border-radius:13px; padding:26px;
+  display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;
+}
+.photo-area svg { width:28px; height:28px; color:var(--text3); }
+.photo-lbl { font-size:13px; color:var(--text3); font-weight:500; }
+.meal-photo-preview {
+  margin: 0 16px 12px;
+  border-radius: 13px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--white);
+  position: relative;
+}
+.meal-photo-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+.meal-photo-remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 폼 섹션 타이틀 */
+.form-title { font-size:14px; font-weight:700; color:var(--text); padding:12px 16px 7px; }
+
+/* 메모 */
+.memo-area { margin:0 16px; }
+.memo-ta {
+  width:100%; background:var(--white); border:1.5px solid var(--border);
+  border-radius:13px; padding:13px 14px; font-size:14px;
+  font-family:inherit; color:var(--text); resize:none; outline:none;
+  line-height:1.7; transition:border-color 0.18s;
+}
+.memo-ta:focus { border-color:var(--green); }
+.memo-cnt { text-align:right; font-size:11px; color:var(--text3); margin-top:5px; }
+
+/* 저장 버튼 */
+.save-cta {
+  margin: 16px 16px;
+  background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  width: calc(100% - 32px);
+  padding: 17px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: -0.3px;
+  box-shadow: 0 6px 20px rgba(38, 198, 176, 0.35);
+  transition: transform 0.15s;
+}
+.save-cta:active { transform:scale(0.98); }
+
+/* ═══════════════ UPLOAD MODAL ═══════════════ */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 500;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 44px;
+}
+.modal-overlay.open { display: flex; }
+.modal-overlay:active { outline: none; }
+.modal-sheet {
+  width: 390px; background: var(--white); border-radius: 24px 24px 0 0;
+  padding: 0 0 32px; animation: slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width: 36px; height: 4px; background: #DDD; border-radius: 2px; margin: 12px auto 0; }
+.modal-title { font-size: 17px; font-weight: 800; color: var(--text); text-align: center; padding: 14px 20px 4px; letter-spacing: -0.4px; }
+.modal-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 20px; }
+.modal-opts { display: flex; flex-direction: column; gap: 0; padding: 0 16px; }
+.modal-opt {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: inherit;
+  text-align: left;
+}
+.modal-opt:active { background: var(--green-bg); }
+.modal-opt-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.modal-opt-icon.cam { background: #FFF3EF; }
+.modal-opt-icon.vid { background: #EBF6F1; }
+.modal-opt-icon.gal { background: #EEF2FF; }
+.modal-opt-icon.rec { background: #FFF8E1; }
+.modal-opt-body {}
+.modal-opt-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; margin-bottom: 2px; }
+.modal-opt-desc { font-size: 12px; color: var(--text3); }
+.modal-cancel {
+  margin: 4px 16px 0; width: calc(100% - 32px);
+  padding: 14px; background: none; border: 1.5px solid var(--border);
+  border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--text2);
+  cursor: pointer; font-family: inherit;
+}
+
+/* ═══════════════ SHOP ═══════════════ */
+.shop-top {
+  background: var(--white); padding: 10px 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.shop-search-btn {
+  width: 38px; height: 38px; background: none; border: none;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.shop-search-btn svg { width: 22px; height: 22px; color: var(--text2); }
+.shop-banner {
+  margin: 12px 16px;
+  background: linear-gradient(120deg, var(--green-dark), var(--green));
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.explore-banner {
+  margin: 0 0 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.explore-banner:active {
+  background: var(--bg);
+}
+.ex-eb-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+.ex-eb-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.ex-eb-ico {
+  font-size: 28px;
+  opacity: 0.9;
+}
+.my-explore-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px 10px;
+}
+.my-explore-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+.my-explore-more {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-dark);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.my-explore-block {
+  padding: 0 16px 8px;
+}
+.sb-txt { font-size: 19px; font-weight: 800; color: white; letter-spacing: -0.5px; line-height: 1.3; }
+.sb-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.sb-emo { font-size: 44px; }
+.prod-sec-title { font-size: 14px; font-weight: 800; color: var(--text); padding: 12px 16px 8px; letter-spacing: -0.3px; }
+.prod-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; margin: 0 16px 8px; box-shadow: var(--shadow); cursor: pointer;
+}
+.prod-thumb {
+  width: 56px; height: 56px; border-radius: 12px;
+  background: var(--green-bg); display: flex; align-items: center;
+  justify-content: center; font-size: 28px; flex-shrink: 0;
+}
+.prod-info { flex: 1; }
+.prod-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; letter-spacing: -0.3px; }
+.prod-desc { font-size: 12px; color: var(--text3); margin-bottom: 5px; }
+.prod-price-row { display: flex; align-items: center; gap: 6px; }
+.prod-price {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--accent-dark);
+  letter-spacing: -0.5px;
+}
+.prod-og { font-size: 11px; color: var(--text3); text-decoration: line-through; }
+.prod-badge { font-size: 10px; background: #FFF0EB; color: #E8734A; padding: 2px 7px; border-radius: 8px; font-weight: 700; }
+.prod-ver {
+  font-size: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.cart-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: white;
+  font-size: 18px;
+  transition: transform 0.15s;
+}
+.cart-btn:active { transform: scale(0.9); }
+
+/* ═══════════════ MY PAGE ═══════════════ */
+.my-top {
+  background: var(--white); padding: 10px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.my-top-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.my-profile-card {
+  margin: 12px 16px; background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow);
+}
+.my-avatar {
+  width: 62px; height: 62px; border-radius: 50%; background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;
+  border: 2px solid var(--green-border);
+}
+.my-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; margin-bottom: 2px; }
+.my-handle { font-size: 13px; color: var(--text3); margin-bottom: 8px; }
+.my-edit-btn {
+  padding: 7px 16px;
+  border: 1.5px solid var(--accent);
+  border-radius: 20px;
+  background: none;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.my-stats { display: flex; gap: 10px; margin: 0 16px 10px; }
+.my-stat-card {
+  flex: 1; background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px; text-align: center; box-shadow: var(--shadow);
+}
+.my-stat-num {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--accent-dark);
+  letter-spacing: -1px;
+}
+.my-stat-lbl { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+.my-menu-card {
+  margin: 0 16px 8px; background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; box-shadow: var(--shadow);
+}
+.my-menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s;
+}
+.my-menu-item:last-child { border-bottom: none; }
+.my-menu-item:active { background: var(--bg); }
+.my-menu-icon { font-size: 20px; width: 32px; text-align: center; }
+.my-menu-txt { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+.my-menu-arr { font-size: 16px; color: var(--text3); }
+
+/* ═══════════════ TOAST ═══════════════ */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 92px;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(30,30,30,0.92);
+  color: white;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 600;
+  max-width: calc(100% - 48px);
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ═══════════════ RECORD - video preview ═══════════════ */
+.video-preview {
+  display: none; margin: 8px 16px; background: var(--green-bg);
+  border: 1.5px solid var(--green-border); border-radius: 13px; padding: 14px 16px;
+  align-items: center; gap: 12px;
+}
+.video-preview.show { display: flex; }
+.vid-icon { font-size: 28px; }
+.vid-info { flex: 1; }
+.vid-name { font-size: 13px; font-weight: 700; color: var(--green); }
+.vid-size { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.vid-del { background: none; border: none; font-size: 20px; color: var(--text3); cursor: pointer; }
+
+/* ═══════════════ REPORT - period picker ═══════════════ */
+.period-dropdown {
+  display: none;
+  position: absolute;
+  right: 16px;
+  top: calc(100% + 6px);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 120;
+  overflow: hidden;
+  min-width: 140px;
+}
+.period-dropdown.open { display: block; }
+.pd-item {
+  padding: 12px 16px; font-size: 14px; font-weight: 600; color: var(--text);
+  cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.15s;
+}
+.pd-item:last-child { border-bottom: none; }
+.pd-item:hover { background: var(--green-bg); color: var(--green); }
+.pd-item.sel { color: var(--green); background: var(--green-bg); }
+.report-hd { position: relative; }
+
+/* ═══════════════ REPORT HEADER (깨진 선택자 복구) ═══════════════ */
+.report-hd {
+  background: var(--white);
+  padding: 12px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.report-hd-title { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; }
+.report-hd-inner { position: relative; flex-wrap: wrap; }
+.report-period {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: var(--bg);
+  font-family: inherit;
+}
+.report-period svg:first-of-type { width: 16px; height: 16px; flex-shrink: 0; }
+
+#s-report .report-hd {
+  background: linear-gradient(180deg, #fafcfc 0%, #f4f7f6 100%);
+  border-bottom: 1px solid rgba(18, 24, 32, 0.06);
+  padding: 14px 18px 16px;
+}
+#s-report .report-hd-title {
+  font-size: 20px;
+  letter-spacing: -0.55px;
+  color: var(--text);
+}
+#s-report .report-period {
+  border-radius: 12px;
+  border-color: rgba(38, 198, 176, 0.25);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 12px rgba(38, 198, 176, 0.08);
+}
+
+/* ─── REPORT: 프리미엄 레이아웃 ─── */
+#s-report .scroll {
+  padding-top: 6px;
+}
+.rp-hero {
+  margin: 0 16px 14px;
+  border-radius: 24px;
+  padding: 22px 20px 20px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 120% 80% at 100% 0%, rgba(61, 212, 191, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 0% 100%, rgba(27, 122, 71, 0.45) 0%, transparent 50%),
+    linear-gradient(145deg, #0c2e28 0%, #134d45 42%, #1a7a6d 100%);
+  box-shadow:
+    0 16px 48px rgba(12, 46, 40, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.rp-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 0h40v40H0zm40 40h40v40H40z'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.rp-hero-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  position: relative;
+  z-index: 1;
+}
+.rp-hero-main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+.rp-hero-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.rp-hero-score {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.rp-hero-num {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -3px;
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.rp-hero-pct {
+  font-size: 22px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+}
+.rp-hero-caption {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: -0.2px;
+}
+.rp-hero-caption strong {
+  color: #8ff5e6;
+  font-weight: 800;
+}
+.rp-hero-badge {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.15px;
+  color: #0c2e28;
+  background: linear-gradient(135deg, #e8fff9 0%, #b8f5eb 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.rp-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 16px 14px;
+}
+.rp-kpi {
+  background: linear-gradient(165deg, #fff 0%, #f9fbfa 100%);
+  border: 1px solid rgba(18, 24, 32, 0.06);
+  border-radius: 18px;
+  padding: 14px 14px 13px;
+  box-shadow: 0 4px 20px rgba(18, 24, 32, 0.05);
+}
+.rp-kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: -0.1px;
+  margin-bottom: 6px;
+}
+.rp-kpi-val {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  color: var(--text);
+  line-height: 1;
+}
+.rp-kpi-val span.unit {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-left: 2px;
+}
+.rp-kpi-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-dark);
+  margin-top: 6px;
+}
+
+.rp-panel {
+  margin: 0 16px 12px;
+  background: linear-gradient(180deg, #fff 0%, #fafbfb 100%);
+  border: 1px solid rgba(18, 24, 32, 0.06);
+  border-radius: 20px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 6px 28px rgba(18, 24, 32, 0.06);
+}
+.rp-panel-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.45px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.rp-panel-note {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+}
+
+/* 라인 차트 (리포트 전용) */
+.rp-line-wrap {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+.rp-line-wrap svg {
+  flex: 1;
+  max-width: 100%;
+  min-width: 0;
+}
+.rp-chart-y {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 76px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.rp-cy {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text3);
+}
+.rp-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 4px 0 34px;
+}
+.rp-clb {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+}
+
+/* 기호성 분포 */
+.rp-appetite-bar {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  background: var(--border);
+  margin-bottom: 12px;
+}
+.rp-appetite-seg {
+  height: 100%;
+}
+.rp-appetite-seg--full {
+  background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+}
+.rp-appetite-seg--partial {
+  background: linear-gradient(90deg, #ffb74d, var(--orange));
+}
+.rp-appetite-seg--none {
+  background: linear-gradient(90deg, #b0b8c0, #8c939b);
+}
+.rp-appetite-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+.rp-leg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+}
+.rp-leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.rp-leg-dot--full {
+  background: var(--accent);
+}
+.rp-leg-dot--partial {
+  background: var(--orange);
+}
+.rp-leg-dot--none {
+  background: var(--text3);
+}
+.rp-leg strong {
+  color: var(--text);
+  font-weight: 800;
+}
+
+/* 시간대 패턴 */
+.rp-slot {
+  margin-bottom: 12px;
+}
+.rp-slot:last-child {
+  margin-bottom: 0;
+}
+.rp-slot-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.rp-slot-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.25px;
+}
+.rp-slot-pct {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--accent-dark);
+}
+.rp-slot-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #eef1f0;
+  overflow: hidden;
+}
+.rp-slot-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+  box-shadow: 0 0 16px rgba(38, 198, 176, 0.35);
+}
+
+/* TOP 랭킹 */
+.rp-rank-list {
+  padding-top: 2px;
+}
+.rp-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(18, 24, 24, 0.06);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 3px 16px rgba(18, 24, 32, 0.045);
+  position: relative;
+  overflow: hidden;
+}
+.rp-rank-row:last-child {
+  margin-bottom: 0;
+}
+.rp-rank-row--1 {
+  border-color: rgba(212, 175, 55, 0.45);
+  background: linear-gradient(135deg, #fffef8 0%, #fff 55%);
+  box-shadow: 0 8px 28px rgba(212, 175, 55, 0.12);
+}
+.rp-rank-row--1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #f4d03f, #d4af37);
+}
+.rp-rank-row--2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #cfd8dc, #90a4ae);
+}
+.rp-rank-row--3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #deb887, #bc8f6f);
+}
+.rp-rk-medal {
+  width: 28px;
+  flex-shrink: 0;
+  font-size: 18px;
+  line-height: 1;
+  text-align: center;
+}
+.rp-rk-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--green-bg);
+  box-shadow: 0 4px 12px rgba(18, 24, 32, 0.1);
+}
+.rp-rk-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rp-rk-body {
+  flex: 1;
+  min-width: 0;
+}
+.rp-rk-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.35px;
+  line-height: 1.25;
+}
+.rp-rk-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.rp-rk-score {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--accent-dark);
+  flex-shrink: 0;
+}
+.rp-rk-score span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+}
+
+/* ═══════════════ COMMUNITY ═══════════════ */
+.comm-hd {
+  background:var(--white); padding:10px 20px 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.comm-title { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-0.5px; padding-bottom:10px; }
+.comm-icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.comm-icon svg { width:22px; height:22px; color:var(--text2); }
+
+.search-wrap {
+  background:var(--white); padding:10px 16px 12px;
+  border-bottom:1px solid var(--border);
+}
+.search-inner {
+  display:flex; align-items:center; gap:8px;
+  background:var(--bg); border-radius:12px; padding:10px 14px;
+}
+.search-inner input {
+  flex:1; background:none; border:none; outline:none;
+  font-size:14px; font-family:inherit; color:var(--text);
+}
+.search-inner svg { width:16px; height:16px; color:var(--text3); flex-shrink:0; }
+
+.tag-row { display:flex; gap:7px; padding:10px 16px; overflow-x:auto; }
+.tag-row::-webkit-scrollbar { display:none; }
+.tagpill {
+  white-space:nowrap; padding:6px 14px; border-radius:20px;
+  background:var(--white); border:1.5px solid var(--border);
+  font-size:12px; font-weight:700; color:var(--text2);
+  cursor:pointer; flex-shrink:0; box-shadow:var(--shadow);
+}
+.tagpill.on {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* 그룹 리스트 (petcamp 스타일) */
+.group-wrap {
+  background:var(--white); margin:0 16px; border-radius:14px;
+  border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow);
+  padding:0 14px;
+}
+.group-row {
+  display:flex; align-items:center; gap:12px;
+  padding:13px 0; border-bottom:1px solid var(--border);
+}
+.group-row:last-child { border-bottom:none; }
+.group-thumb2 {
+  width:50px; height:50px; border-radius:12px; overflow:hidden; flex-shrink:0;
+  background:var(--green-bg);
+}
+.group-thumb2 img { width:100%; height:100%; object-fit:cover; }
+.group-body { flex:1; }
+.group-name2 { font-size:14px; font-weight:700; color:var(--text); margin-bottom:2px; letter-spacing:-0.3px; }
+.group-cnt { font-size:12px; color:var(--text3); margin-bottom:1px; }
+.group-desc2 { font-size:12px; color:var(--text2); }
+.join-btn {
+  background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.join-btn.in {
+  background: var(--white);
+  color: var(--accent-dark);
+  border: 1.5px solid var(--accent);
+}
+
+/* 피드 포스트 */
+.feed-post3 {
+  background:var(--white); margin:8px 16px; border-radius:14px;
+  overflow:hidden; box-shadow:var(--shadow); border:1px solid var(--border);
+}
+.fp-head {
+  display:flex; align-items:center; gap:10px; padding:12px 14px 10px;
+}
+.fp-ava {
+  width:36px; height:36px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  background:var(--green-bg);
+}
+.fp-ava img { width:100%; height:100%; object-fit:cover; }
+.fp-name { font-size:13px; font-weight:700; color:var(--text); }
+.fp-time { font-size:11px; color:var(--text3); }
+.fp-pet {
+  margin-left: auto;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.fp-img { width:100%; height:200px; overflow:hidden; }
+.fp-img img { width:100%; height:100%; object-fit:cover; display:block; }
+.fp-body { padding:10px 14px 12px; }
+.fp-txt { font-size:13px; color:var(--text); line-height:1.65; margin-bottom:7px; }
+.fp-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:9px; }
+.fptag {
+  font-size: 12px;
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+.fp-acts { display:flex; gap:14px; padding-top:9px; border-top:1px solid var(--border); }
+.fp-act {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+}
+.fp-act.liked { color: var(--red); }
+.fp-act.liked .fp-heart { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- ══════════════════════════════════════
+     HOME
+══════════════════════════════════════ -->
+<div id="s-home" class="screen active">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="top-bar">
+    <div class="logo">Dan <span>Q</span></div>
+    <div class="top-icons">
+      <button class="top-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+    </div>
+  </div>
+  <div class="segtabs">
+    <div class="segtab on">홈</div>
+    <div class="segtab">케어 피드</div>
+    <div class="segtab">리포트 요약</div>
+  </div>
+
+  <div class="scroll">
+
+    <section class="home-hero" aria-label="요약">
+      <div class="home-hero-copy">
+        <p class="hero-eyebrow">반려견 · 반려묘 기호성 기록</p>
+        <h2 class="hero-title">오늘 급여,<br />패턴으로 남겨요</h2>
+        <p class="hero-desc">사료·간식 반응을 날짜별로 모아 두면 맞춤 제안에 쓰입니다.</p>
+      </div>
+      <div class="home-hero-visual" aria-hidden="true">
+        <img
+          class="hero-img-cat"
+          src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=90&fit=crop"
+          alt=""
+        />
+        <img
+          class="hero-img-dog"
+          src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=85&fit=crop"
+          alt=""
+        />
+      </div>
+    </section>
+
+    <!-- 실시간 인기 피드 -->
+    <div class="sec-h" style="margin-top:14px;">
+      <span class="sec-h-title">실시간 인기 피드</span>
+      <span class="sec-h-more">더보기 ›</span>
+    </div>
+    <div class="feed-row">
+      <div class="feed-thumb-wrap">
+        <div class="feed-thumb-img">
+          <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=300&q=80&fit=crop" alt="바다 처음 본 날" onerror="this.parentElement.style.background='#C5E8D5';this.style.display='none'">
+        </div>
+        <div class="feed-thumb-meta">
+          <div class="feed-thumb-cap">바다 처음 본 날</div>
+          <div class="feed-thumb-sub">
+            <div class="feed-thumb-avatar">🐩</div>
+            <span class="feed-thumb-user">토리눈나</span>
+            <div class="feed-thumb-likes">♡ 128</div>
+          </div>
+        </div>
+      </div>
+      <div class="feed-thumb-wrap">
+        <div class="feed-thumb-img">
+          <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=300&q=80&fit=crop" alt="새 장난감 개봉기" onerror="this.parentElement.style.background='#F5E6C0';this.style.display='none'">
+        </div>
+        <div class="feed-thumb-meta">
+          <div class="feed-thumb-cap">새 장난감 개봉기</div>
+          <div class="feed-thumb-sub">
+            <div class="feed-thumb-avatar">🦮</div>
+            <span class="feed-thumb-user">홍치맘</span>
+            <div class="feed-thumb-likes">♡ 96</div>
+          </div>
+        </div>
+      </div>
+      <div class="feed-thumb-wrap">
+        <div class="feed-thumb-img">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=300&q=80&fit=crop" alt="산책은 언제나 즐거워" onerror="this.parentElement.style.background='#FFD6D6';this.style.display='none'">
+        </div>
+        <div class="feed-thumb-meta">
+          <div class="feed-thumb-cap">산책은 언제나 즐거워</div>
+          <div class="feed-thumb-sub">
+            <div class="feed-thumb-avatar">🐶</div>
+            <span class="feed-thumb-user">쿠키아빠</span>
+            <div class="feed-thumb-likes">♡ 73</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 오늘 두부 현황 -->
+    <div class="sec-h" style="margin-top:14px;"><span class="sec-h-title">오늘 식사 현황</span></div>
+    <div class="today-card">
+      <div class="today-ring">
+        <svg width="58" height="58" viewBox="0 0 58 58">
+          <circle class="ring-track" cx="29" cy="29" r="25"/>
+          <circle class="ring-prog" id="homeRing" cx="29" cy="29" r="25"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct">50%</div>
+          <div class="ring-lbl">완료</div>
+        </div>
+      </div>
+      <div class="today-body">
+        <div class="today-title">두부의 오늘</div>
+        <div class="today-sub">3번 중 1번 식사 완료</div>
+        <div class="chip-row">
+          <span class="chip done">아침 ✓</span>
+          <span class="chip">점심 대기</span>
+          <span class="chip">저녁 예정</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="care-suite" aria-label="오늘 식사 및 이번 주 완식률">
+      <header class="care-suite-head">
+        <img
+          class="care-avatar"
+          src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=120&q=85&fit=crop"
+          alt=""
+          width="46"
+          height="46"
+        />
+        <div>
+          <h3 class="care-suite-title">오늘 식사</h3>
+          <p class="care-suite-sub">두부 · 하루 3끼 기준</p>
+        </div>
+      </header>
+      <div class="meal-flow">
+        <div class="meal-row">
+          <div class="meal-rail">
+            <span class="meal-dot meal-dot--done"></span>
+            <span class="meal-line meal-line--done"></span>
+          </div>
+          <article class="meal-card meal-card--done">
+            <p class="meal-meta">오전 8:00 · 아침</p>
+            <p class="meal-title">닭가슴살 사료 + 산양유</p>
+            <div class="meal-footer">
+              <span class="meal-pct">100%</span>
+              <span class="meal-check" aria-label="완료">✓</span>
+            </div>
+          </article>
+        </div>
+        <div class="meal-row">
+          <div class="meal-rail">
+            <span class="meal-dot meal-dot--now"></span>
+            <span class="meal-line"></span>
+          </div>
+          <article class="meal-card meal-card--active">
+            <p class="meal-meta">오후 1:00 · 점심</p>
+            <p class="meal-title">연어 오일 토핑 스페셜</p>
+            <div class="meal-footer">
+              <span class="meal-wait">기록 대기</span>
+              <button type="button" class="meal-rec-btn" onclick="goTo('s-record')">기록하기</button>
+            </div>
+          </article>
+        </div>
+        <div class="meal-row">
+          <div class="meal-rail">
+            <span class="meal-dot"></span>
+          </div>
+          <article class="meal-card">
+            <p class="meal-meta">오후 7:00 · 저녁</p>
+            <p class="meal-title">소고기 + 고구마 퓨레</p>
+            <div class="meal-footer">
+              <span class="meal-scheduled">예정</span>
+              <span></span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="care-suite-chart">
+        <div class="week-head">이번 주 완식률<span class="stat-note">전주 대비 +12%p</span></div>
+        <div class="bar-area">
+          <div class="bc"><div class="b md" style="height:38px;"></div><div class="bd">월</div></div>
+          <div class="bc"><div class="b md" style="height:48px;"></div><div class="bd">화</div></div>
+          <div class="bc"><div class="b hi" style="height:56px;"></div><div class="bd">수</div></div>
+          <div class="bc"><div class="b hi" style="height:46px;"></div><div class="bd">목</div></div>
+          <div class="bc"><div class="b md" style="height:30px;"></div><div class="bd">금</div></div>
+          <div class="bc"><div class="b hi" style="height:56px;"></div><div class="bd">토</div></div>
+          <div class="bc"><div class="b lo" style="height:12px;"></div><div class="bd">일</div></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     RECORD
+══════════════════════════════════════ -->
+<div id="s-record" class="screen" style="background:var(--bg);">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="rec-nav">
+    <div class="rec-back">
+      <button class="back-btn2" onclick="goTo('s-home')">‹</button>
+    </div>
+    <div class="rec-meal-kw">☀️ 점심</div>
+    <div class="rec-title2">식사 기록</div>
+    <div class="rec-sub2">연어 오일 토핑 스페셜</div>
+    <div class="rec-sub2" style="margin-top:2px;">예정 시간: 오후 1:00</div>
+  </div>
+
+  <div class="scroll">
+    <div class="form-title">식사 완료 여부</div>
+    <div class="status-trio">
+      <div class="s-card sel" onclick="selStatus(this)">
+        <div class="s-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="s-label">완료</div>
+      </div>
+      <div class="s-card" onclick="selStatus(this)">
+        <div class="s-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="s-label">일부 남김</div>
+      </div>
+      <div class="s-card" onclick="selStatus(this)">
+        <div class="s-icon-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="s-label">먹지 않음</div>
+      </div>
+    </div>
+
+    <div class="form-title">사진 기록 <span style="color:var(--text3);font-weight:400;">(선택)</span></div>
+    <input type="file" id="mealPhotoInput" accept="image/*" hidden />
+    <div class="photo-area" id="mealPhotoTrigger" role="button" tabindex="0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div class="photo-lbl">탭해서 사진 선택</div>
+    </div>
+    <div class="meal-photo-preview" id="mealPhotoPreview" hidden>
+      <img id="mealPhotoImg" alt="첨부 미리보기" />
+      <button type="button" class="meal-photo-remove" id="mealPhotoRemove">삭제</button>
+    </div>
+
+    <div class="form-title">메모 <span style="color:var(--text3);font-weight:400;">(선택)</span></div>
+    <div class="memo-area">
+      <textarea class="memo-ta" rows="4" placeholder="식사량, 반응, 특이사항 등을 기록해주세요." oninput="cntMemo(this)"></textarea>
+      <div class="memo-cnt"><span id="mc">0</span>/200</div>
+    </div>
+
+    <button class="save-cta" onclick="saveRecord()">기록 저장</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     REPORT
+══════════════════════════════════════ -->
+<div id="s-report" class="screen report-screen" style="background:var(--bg);">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="report-hd report-hd-inner">
+    <div class="report-hd-title">리포트</div>
+    <button type="button" class="report-period" id="reportPeriodBtn" aria-expanded="false" aria-haspopup="listbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span id="reportPeriodLabel">이번 주</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="period-dropdown" id="periodDropdown" role="listbox">
+      <div class="pd-item sel" role="option" data-label="이번 주">이번 주</div>
+      <div class="pd-item" role="option" data-label="지난 주">지난 주</div>
+      <div class="pd-item" role="option" data-label="이번 달">이번 달</div>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <section class="rp-hero" aria-label="주간 요약">
+      <img
+        class="rp-hero-avatar"
+        src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=128&q=85&fit=crop"
+        alt=""
+        width="56"
+        height="56"
+      />
+      <div class="rp-hero-main">
+        <p class="rp-hero-eyebrow">두부 · 인사이트</p>
+        <div class="rp-hero-score" title="식사 완료율">
+          <span class="rp-hero-num">85</span><span class="rp-hero-pct">%</span>
+        </div>
+        <p class="rp-hero-caption">이번 주 완식률 · 지난주 대비 <strong>+15%p</strong></p>
+      </div>
+      <div class="rp-hero-badge">추세 ↑</div>
+    </section>
+
+    <div class="rp-kpi-grid">
+      <div class="rp-kpi">
+        <div class="rp-kpi-label">총 기록</div>
+        <div class="rp-kpi-val">18<span class="unit">회</span></div>
+        <div class="rp-kpi-sub">식사 로그 누적</div>
+      </div>
+      <div class="rp-kpi">
+        <div class="rp-kpi-label">사진 첨부율</div>
+        <div class="rp-kpi-val">72<span class="unit">%</span></div>
+        <div class="rp-kpi-sub">비주얼 아카이브</div>
+      </div>
+      <div class="rp-kpi">
+        <div class="rp-kpi-label">평균 식사 시간</div>
+        <div class="rp-kpi-val">12<span class="unit">분</span></div>
+        <div class="rp-kpi-sub">전주 대비 −2분</div>
+      </div>
+      <div class="rp-kpi">
+        <div class="rp-kpi-label">연속 기록</div>
+        <div class="rp-kpi-val">5<span class="unit">일</span></div>
+        <div class="rp-kpi-sub">스트릭 유지 중</div>
+      </div>
+    </div>
+
+    <section class="rp-panel" aria-label="완식률 추이">
+      <h3 class="rp-panel-title">
+        완식률 추이
+        <span class="rp-panel-note">일별 · 선택 기간 반영</span>
+      </h3>
+      <div class="rp-line-wrap">
+        <div class="rp-chart-y">
+          <span class="rp-cy">100%</span>
+          <span class="rp-cy">50%</span>
+          <span class="rp-cy">0%</span>
+        </div>
+        <svg width="100%" height="76" viewBox="0 0 158 76" preserveAspectRatio="xMidYMid meet" style="margin-left:28px;display:block;">
+          <defs>
+            <linearGradient id="rpChartFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#26c6b0" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#1b7a47" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="rpChartStroke" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#1fa897"/>
+              <stop offset="100%" stop-color="#1b7a47"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,52 L22,42 L44,35 L66,30 L88,38 L110,22 L132,16 L158,10" fill="none" stroke="url(#rpChartStroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M0,52 L22,42 L44,35 L66,30 L88,38 L110,22 L132,16 L158,10 L158,76 L0,76Z" fill="url(#rpChartFill)"/>
+          <circle cx="158" cy="10" r="4" fill="#fff" stroke="#1b7a47" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="rp-chart-labels">
+        <span class="rp-clb">월</span><span class="rp-clb">화</span><span class="rp-clb">수</span>
+        <span class="rp-clb">목</span><span class="rp-clb">금</span><span class="rp-clb">토</span><span class="rp-clb">일</span>
+      </div>
+    </section>
+
+    <section class="rp-panel" aria-label="기호성 분포">
+      <h3 class="rp-panel-title">
+        기호성 분포
+        <span class="rp-panel-note">완료 · 일부 · 미식사</span>
+      </h3>
+      <div class="rp-appetite-bar" title="기록 기준 비율">
+        <div class="rp-appetite-seg rp-appetite-seg--full" style="width:68%;"></div>
+        <div class="rp-appetite-seg rp-appetite-seg--partial" style="width:22%;"></div>
+        <div class="rp-appetite-seg rp-appetite-seg--none" style="width:10%;"></div>
+      </div>
+      <div class="rp-appetite-legend">
+        <div class="rp-leg"><span class="rp-leg-dot rp-leg-dot--full"></span>완료 <strong>68%</strong></div>
+        <div class="rp-leg"><span class="rp-leg-dot rp-leg-dot--partial"></span>일부 <strong>22%</strong></div>
+        <div class="rp-leg"><span class="rp-leg-dot rp-leg-dot--none"></span>미식사 <strong>10%</strong></div>
+      </div>
+    </section>
+
+    <section class="rp-panel" aria-label="시간대별 패턴">
+      <h3 class="rp-panel-title">
+        시간대별 완료율
+        <span class="rp-panel-note">아침 · 점심 · 저녁</span>
+      </h3>
+      <div class="rp-slot">
+        <div class="rp-slot-head">
+          <span class="rp-slot-name">아침</span>
+          <span class="rp-slot-pct">88%</span>
+        </div>
+        <div class="rp-slot-track"><div class="rp-slot-fill" style="width:88%;"></div></div>
+      </div>
+      <div class="rp-slot">
+        <div class="rp-slot-head">
+          <span class="rp-slot-name">점심</span>
+          <span class="rp-slot-pct">71%</span>
+        </div>
+        <div class="rp-slot-track"><div class="rp-slot-fill" style="width:71%;"></div></div>
+      </div>
+      <div class="rp-slot">
+        <div class="rp-slot-head">
+          <span class="rp-slot-name">저녁</span>
+          <span class="rp-slot-pct">94%</span>
+        </div>
+        <div class="rp-slot-track"><div class="rp-slot-fill" style="width:94%;"></div></div>
+      </div>
+    </section>
+
+    <section class="rp-panel" aria-label="선호 식단">
+      <h3 class="rp-panel-title">
+        선호 식단 TOP 3
+        <span class="rp-panel-note">기호성 점수 상위</span>
+      </h3>
+      <div class="rp-rank-list">
+        <div class="rp-rank-row rp-rank-row--1">
+          <div class="rp-rk-medal" aria-hidden="true">🥇</div>
+          <div class="rp-rk-img">
+            <img src="https://images.unsplash.com/photo-1615361200141-f45040f367be?w=100&q=80&fit=crop" alt="" onerror="this.parentElement.style.background='#C5E8D5';this.style.display='none'">
+          </div>
+          <div class="rp-rk-body">
+            <div class="rp-rk-name">연어 오일 토핑 스페셜</div>
+            <div class="rp-rk-meta">완료 비율 높음 · 메모 6건</div>
+          </div>
+          <div class="rp-rk-score">92<span>%</span></div>
+        </div>
+        <div class="rp-rank-row rp-rank-row--2">
+          <div class="rp-rk-medal" aria-hidden="true">🥈</div>
+          <div class="rp-rk-img">
+            <img src="https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=100&q=80&fit=crop" alt="" onerror="this.parentElement.style.background='#FFF3D6';this.style.display='none'">
+          </div>
+          <div class="rp-rk-body">
+            <div class="rp-rk-name">닭가슴살 사료 + 산양유</div>
+            <div class="rp-rk-meta">안정적 반응 · 사진 4장</div>
+          </div>
+          <div class="rp-rk-score">85<span>%</span></div>
+        </div>
+        <div class="rp-rank-row rp-rank-row--3">
+          <div class="rp-rk-medal" aria-hidden="true">🥉</div>
+          <div class="rp-rk-img">
+            <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=100&q=80&fit=crop" alt="" onerror="this.parentElement.style.background='#FFD6D6';this.style.display='none'">
+          </div>
+          <div class="rp-rk-body">
+            <div class="rp-rk-name">소고기 야채 믹스</div>
+            <div class="rp-rk-meta">가끔 일부 남김</div>
+          </div>
+          <div class="rp-rk-score">78<span>%</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     COMMUNITY
+══════════════════════════════════════ -->
+<div id="s-community" class="screen" style="background:var(--bg);">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="comm-hd" style="border-bottom:1px solid var(--border);">
+    <div class="comm-title">그룹</div>
+    <div class="comm-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+  </div>
+  <div class="segtabs">
+    <div class="segtab on">추천 그룹</div>
+    <div class="segtab">내 그룹</div>
+  </div>
+
+  <div class="scroll">
+    <div class="search-wrap">
+      <div class="search-inner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="groupSearchInput" placeholder="그룹 이름으로 검색" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- 그룹 리스트 (petcamp 스타일) -->
+    <div class="sec-h">
+      <span class="sec-h-title">지금 뜨는 그룹</span>
+      <span class="sec-h-more">더보기 ›</span>
+    </div>
+    <div class="group-wrap">
+      <div class="group-row" data-group-name="댕댕이 산책 친구들">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐕';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">댕댕이 산책 친구들</div>
+          <div class="group-cnt">멤버 1,234명</div>
+          <div class="group-desc2">매일 산책 인증해요!</div>
+        </div>
+        <button type="button" class="join-btn" onclick="toggleJoin(this)">가입</button>
+      </div>
+      <div class="group-row" data-group-name="강아지 훈련 교실">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐾';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">강아지 훈련 교실</div>
+          <div class="group-cnt">멤버 856명</div>
+          <div class="group-desc2">훈련 팁과 꿀팁을 공유해요</div>
+        </div>
+        <button type="button" class="join-btn" onclick="toggleJoin(this)">가입</button>
+      </div>
+      <div class="group-row" data-group-name="반려견 사진 모임">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='📸';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">반려견 사진 모임</div>
+          <div class="group-cnt">멤버 2,031명</div>
+          <div class="group-desc2">사진 찍는 걸 좋아하는 모임</div>
+        </div>
+        <button type="button" class="join-btn in" onclick="toggleJoin(this)">가입중</button>
+      </div>
+      <div class="group-row" data-group-name="소형견 모여라">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🦴';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">소형견 모여라</div>
+          <div class="group-cnt">멤버 1,102명</div>
+          <div class="group-desc2">소형견 키우는 보호자 모임</div>
+        </div>
+        <button type="button" class="join-btn" onclick="toggleJoin(this)">가입</button>
+      </div>
+      <div class="group-row" data-group-name="다견가정 모임">
+        <div class="group-thumb2">
+          <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=120&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐶';this.style.display='none'">
+        </div>
+        <div class="group-body">
+          <div class="group-name2">다견가정 모임</div>
+          <div class="group-cnt">멤버 623명</div>
+          <div class="group-desc2">다가정 반려인 모임</div>
+        </div>
+        <button type="button" class="join-btn" onclick="toggleJoin(this)">가입</button>
+      </div>
+    </div>
+
+    <!-- 피드 포스트 -->
+    <div class="sec-h" style="margin-top:14px;"><span class="sec-h-title">최근 피드</span></div>
+    <div class="feed-post3">
+      <div class="fp-head">
+        <div class="fp-ava">
+          <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=80&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🐩'">
+        </div>
+        <div>
+          <div class="fp-name">뽀미맘</div>
+          <div class="fp-time">3분 전</div>
+        </div>
+        <div class="fp-pet">포메라니안</div>
+      </div>
+      <div class="fp-img">
+        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=85&fit=crop" alt="산책" onerror="this.style.background='#C5E8D5';this.style.height='200px';this.style.display='flex'">
+      </div>
+      <div class="fp-body">
+        <div class="fp-txt">오늘 드디어 뽀미가 100% 완식했어요!! 연어 오일 토핑 조합이 정답인 것 같아요 🎉</div>
+        <div class="fp-tags">
+          <span class="fptag">완식 성공</span>
+          <span class="fptag">연어 토핑</span>
+        </div>
+        <div class="fp-acts">
+          <button type="button" class="fp-act liked" onclick="toggleFeedLike(this)" data-count="128"><span class="fp-heart">♥</span> <span class="fp-like-num">128</span></button>
+          <button type="button" class="fp-act">댓글 14</button>
+          <button type="button" class="fp-act">공유</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="feed-post3">
+      <div class="fp-head">
+        <div class="fp-ava">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=80&q=80&fit=crop&crop=face" alt="" onerror="this.parentElement.innerHTML='🦮'">
+        </div>
+        <div>
+          <div class="fp-name">코코아빠</div>
+          <div class="fp-time">1시간 전</div>
+        </div>
+        <div class="fp-pet">골든리트리버</div>
+      </div>
+      <div class="fp-img">
+        <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=800&q=85&fit=crop" alt="강아지" onerror="this.style.background='#FFF3D6';this.style.height='200px'">
+      </div>
+      <div class="fp-body">
+        <div class="fp-txt">코코아 드디어 사료 유목민 탈출했어요 😭 3주째 닭 + 산양유 조합으로 안정적. 다들 이 조합 강추!</div>
+        <div class="fp-tags">
+          <span class="fptag">닭가슴살</span>
+          <span class="fptag">산양유</span>
+        </div>
+        <div class="fp-acts">
+          <button type="button" class="fp-act" onclick="toggleFeedLike(this)" data-count="94"><span class="fp-heart">♡</span> <span class="fp-like-num">94</span></button>
+          <button type="button" class="fp-act">댓글 8</button>
+          <button type="button" class="fp-act">공유</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MY PAGE
+══════════════════════════════════════ -->
+<div id="s-my" class="screen" style="background:var(--bg);">
+  <div class="status">
+    <span class="status-clock">9:41</span>
+    <div class="status-r">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+  <div class="my-top">
+    <div class="my-top-title">마이페이지</div>
+    <button type="button" class="shop-search-btn" aria-label="설정" onclick="showToast('설정')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+  <div class="scroll">
+    <div class="my-profile-card">
+      <div class="my-avatar" aria-hidden="true">🐕</div>
+      <div style="flex:1;">
+        <div class="my-name">김두부</div>
+        <div class="my-handle">리트리버 · 3살 · 중성화 완료</div>
+        <button type="button" class="my-edit-btn" onclick="showToast('프로필 수정')">프로필 수정</button>
+      </div>
+    </div>
+    <div class="my-stats">
+      <div class="my-stat-card">
+        <div class="my-stat-num">48</div>
+        <div class="my-stat-lbl">기록한 식사</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num">12</div>
+        <div class="my-stat-lbl">연속 기록일</div>
+      </div>
+    </div>
+
+    <div class="my-explore-head">
+      <span class="my-explore-title">탐색 · 스토어</span>
+      <button type="button" class="my-explore-more" onclick="showToast('전체 카탈로그는 웹 스토어와 연동됩니다.')">전체 보기</button>
+    </div>
+    <div class="my-explore-block">
+      <div class="explore-banner" onclick="showToast('기호성 테스트 키트 상세')">
+        <div>
+          <div class="ex-eb-title">기호성 테스트 키트</div>
+          <div class="ex-eb-sub">첫 구매 15% · 무료 배송</div>
+        </div>
+        <span class="ex-eb-ico" aria-hidden="true">🧪</span>
+      </div>
+      <div class="prod-sec-title" style="padding-left: 0; padding-right: 0;">자주 함께 담는 상품</div>
+      <div class="prod-card" style="margin-left: 0; margin-right: 0;" onclick="showToast('상품 상세')">
+        <div class="prod-thumb">🍖</div>
+        <div class="prod-info">
+          <div class="prod-name">닭가슴살 베이스 사료 2kg</div>
+          <div class="prod-desc">저알러지 · 전연령 · 강아지</div>
+          <div class="prod-price-row">
+            <span class="prod-price">42,000원</span>
+            <span class="prod-og">49,000원</span>
+            <span class="prod-badge">특가</span>
+          </div>
+        </div>
+        <button type="button" class="cart-btn" onclick="event.stopPropagation(); showToast('장바구니에 담았습니다');">＋</button>
+      </div>
+      <div class="prod-card" style="margin-left: 0; margin-right: 0;" onclick="showToast('상품 상세')">
+        <div class="prod-thumb">🐟</div>
+        <div class="prod-info">
+          <div class="prod-name">연어 오일 토핑</div>
+          <div class="prod-desc">오메가3 · 강아지·고양이</div>
+          <div class="prod-price-row">
+            <span class="prod-price">18,500원</span>
+            <span class="prod-ver">재구매 많음</span>
+          </div>
+        </div>
+        <button type="button" class="cart-btn" onclick="event.stopPropagation(); showToast('장바구니에 담았습니다');">＋</button>
+      </div>
+      <div class="prod-card" style="margin-left: 0; margin-right: 0;" onclick="showToast('상품 상세')">
+        <div class="prod-thumb">🥛</div>
+        <div class="prod-info">
+          <div class="prod-name">산양유 파우더</div>
+          <div class="prod-desc">분유 대체 · 고양이 추천</div>
+          <div class="prod-price-row">
+            <span class="prod-price">24,900원</span>
+          </div>
+        </div>
+        <button type="button" class="cart-btn" onclick="event.stopPropagation(); showToast('장바구니에 담았습니다');">＋</button>
+      </div>
+    </div>
+
+    <div class="my-menu-card">
+      <div class="my-menu-item" onclick="goTo('s-report'); highlightNav('n-report');"><span class="my-menu-icon">📊</span><span class="my-menu-txt">식사 리포트</span><span class="my-menu-arr">›</span></div>
+      <div class="my-menu-item" onclick="showToast('구독 관리')"><span class="my-menu-icon">📦</span><span class="my-menu-txt">정기 배송</span><span class="my-menu-arr">›</span></div>
+      <div class="my-menu-item" onclick="showToast('고객센터')"><span class="my-menu-icon">💬</span><span class="my-menu-txt">문의하기</span><span class="my-menu-arr">›</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ UPLOAD MODAL ══════ -->
+<div class="modal-overlay" id="uploadModal" aria-hidden="true" onclick="if(event.target===this)closeUploadModal()">
+  <div class="modal-sheet" role="dialog" aria-labelledby="uploadModalTitle" onclick="event.stopPropagation()">
+    <div class="modal-handle" onclick="closeUploadModal()"></div>
+    <div class="modal-title" id="uploadModalTitle">무엇을 기록할까요?</div>
+    <div class="modal-sub">사진·영상은 기기에서 선택할 수 있어요.</div>
+    <div class="modal-opts">
+      <button type="button" class="modal-opt" onclick="pickMealPhoto(); closeUploadModal();">
+        <div class="modal-opt-icon cam">📷</div>
+        <div class="modal-opt-body">
+          <div class="modal-opt-title">식사 사진 기록</div>
+          <div class="modal-opt-desc">앨범에서 선택 후 메모와 함께 저장</div>
+        </div>
+      </button>
+      <button type="button" class="modal-opt" onclick="closeUploadModal(); goTo('s-record'); highlightNav(null);">
+        <div class="modal-opt-icon rec">✓</div>
+        <div class="modal-opt-body">
+          <div class="modal-opt-title">식사 완료 체크</div>
+          <div class="modal-opt-desc">먹음 / 일부 / 안 먹음 빠르게 기록</div>
+        </div>
+      </button>
+      <button type="button" class="modal-opt" onclick="showToast('영상 분석은 Dan Q 앱 실시간 분석 메뉴에서 이용할 수 있어요.'); closeUploadModal();">
+        <div class="modal-opt-icon vid">▶</div>
+        <div class="modal-opt-body">
+          <div class="modal-opt-title">급여 영상</div>
+          <div class="modal-opt-desc">기호성 분석 연결 (별도 화면)</div>
+        </div>
+      </button>
+    </div>
+    <button type="button" class="modal-cancel" onclick="closeUploadModal()">닫기</button>
+  </div>
+</div>
+
+<div class="toast" id="appToast" role="status"></div>
+
+<!-- ══════ BOTTOM NAV (5칸: 홈 · 리포트 · + · 그룹 · 마이 — 탐색은 마이 안으로) ══════ -->
+<div class="bottom-nav">
+  <button type="button" class="nav-it on" id="n-home" onclick="goTo('s-home')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span class="nav-lbl">홈</span>
+  </button>
+  <button type="button" class="nav-it" id="n-report" onclick="goTo('s-report')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span class="nav-lbl">리포트</span>
+  </button>
+  <div class="nav-fab-slot">
+    <button type="button" class="nav-fab" onclick="openUploadModal()" aria-label="기록 추가">＋</button>
+  </div>
+  <button type="button" class="nav-it" id="n-comm" onclick="goTo('s-community')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    <span class="nav-lbl">그룹</span>
+  </button>
+  <button type="button" class="nav-it" id="n-my" onclick="goTo('s-my')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="nav-lbl">마이</span>
+  </button>
+</div>
+
+</div>
+
+<script>
+const navMap = {
+  's-home': 'n-home',
+  's-record': null,
+  's-report': 'n-report',
+  's-community': 'n-comm',
+  's-my': 'n-my'
+};
+
+let toastTimer = null;
+
+function goTo(id) {
+  const screen = document.getElementById(id);
+  if (!screen) return;
+  closeUploadModal();
+  document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
+  screen.classList.add('active');
+  document.querySelectorAll('.nav-it').forEach(function (n) { n.classList.remove('on'); });
+  const nid = navMap[id];
+  if (nid) {
+    const tab = document.getElementById(nid);
+    if (tab) tab.classList.add('on');
+  }
+  const sc = screen.querySelector('.scroll');
+  if (sc) sc.scrollTop = 0;
+}
+
+function highlightNav(navId) {
+  document.querySelectorAll('.nav-it').forEach(function (n) { n.classList.remove('on'); });
+  if (navId) {
+    const tab = document.getElementById(navId);
+    if (tab) tab.classList.add('on');
+  }
+}
+
+function openUploadModal() {
+  const m = document.getElementById('uploadModal');
+  if (!m) return;
+  m.classList.add('open');
+  m.setAttribute('aria-hidden', 'false');
+}
+
+function closeUploadModal() {
+  const m = document.getElementById('uploadModal');
+  if (!m) return;
+  m.classList.remove('open');
+  m.setAttribute('aria-hidden', 'true');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('appToast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
+}
+
+function pickMealPhoto() {
+  goTo('s-record');
+  setTimeout(function () {
+    var inp = document.getElementById('mealPhotoInput');
+    if (inp) inp.click();
+  }, 280);
+}
+
+function selStatus(el) {
+  document.querySelectorAll('.s-card').forEach(function (c) { c.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+function cntMemo(el) {
+  var v = Math.min(el.value.length, 200);
+  var mc = document.getElementById('mc');
+  if (mc) mc.textContent = String(v);
+  if (el.value.length > 200) el.value = el.value.slice(0, 200);
+}
+
+function saveRecord() {
+  try {
+    var n = parseInt(localStorage.getItem('danq_meal_count') || '48', 10);
+    var next = n + 1;
+    localStorage.setItem('danq_meal_count', String(next));
+    var el = document.querySelector('#s-my .my-stat-card:first-child .my-stat-num');
+    if (el) el.textContent = String(next);
+  } catch (e) {}
+  showToast('기록을 저장했습니다.');
+  goTo('s-report');
+}
+
+function toggleJoin(btn) {
+  var joined = btn.classList.contains('in');
+  if (joined) {
+    btn.classList.remove('in');
+    btn.textContent = '가입';
+    showToast('그룹 나가기 처리되었습니다.');
+  } else {
+    btn.classList.add('in');
+    btn.textContent = '가입중';
+    showToast('그룹에 가입했습니다.');
+  }
+}
+
+function toggleFeedLike(btn) {
+  var liked = btn.classList.contains('liked');
+  var numEl = btn.querySelector('.fp-like-num');
+  var heart = btn.querySelector('.fp-heart');
+  var base = parseInt(btn.getAttribute('data-count') || '0', 10);
+  var cur = numEl ? parseInt(numEl.textContent, 10) || base : base;
+  if (liked) {
+    btn.classList.remove('liked');
+    if (heart) heart.textContent = '♡';
+    if (numEl) numEl.textContent = String(Math.max(0, cur - 1));
+  } else {
+    btn.classList.add('liked');
+    if (heart) heart.textContent = '♥';
+    if (numEl) numEl.textContent = String(cur + 1);
+  }
+}
+
+function filterGroups(q) {
+  var query = (q || '').trim().toLowerCase();
+  document.querySelectorAll('.group-row').forEach(function (row) {
+    var name = (row.getAttribute('data-group-name') || '').toLowerCase();
+    row.style.display = !query || name.indexOf(query) !== -1 ? '' : 'none';
+  });
+}
+
+function setupReportPeriod() {
+  var btn = document.getElementById('reportPeriodBtn');
+  var drop = document.getElementById('periodDropdown');
+  var label = document.getElementById('reportPeriodLabel');
+  if (!btn || !drop) return;
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var open = drop.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  drop.querySelectorAll('.pd-item').forEach(function (item) {
+    item.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      drop.querySelectorAll('.pd-item').forEach(function (i) { i.classList.remove('sel'); });
+      item.classList.add('sel');
+      if (label) label.textContent = item.getAttribute('data-label') || item.textContent;
+      drop.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', function () {
+    drop.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  });
+}
+
+function tickClock() {
+  var now = new Date();
+  var h = now.getHours();
+  var m = now.getMinutes();
+  var txt = h + ':' + (m < 10 ? '0' : '') + m;
+  document.querySelectorAll('.status').forEach(function (bar) {
+    var sp = bar.querySelector('span');
+    if (sp && !sp.closest('.status-r')) sp.textContent = txt;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  tickClock();
+  setInterval(tickClock, 30000);
+
+  var photoIn = document.getElementById('mealPhotoInput');
+  var photoTrig = document.getElementById('mealPhotoTrigger');
+  var prev = document.getElementById('mealPhotoPreview');
+  var prevImg = document.getElementById('mealPhotoImg');
+  var removeBtn = document.getElementById('mealPhotoRemove');
+
+  if (photoTrig && photoIn) {
+    photoTrig.addEventListener('click', function () { photoIn.click(); });
+    photoTrig.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); photoIn.click(); }
+    });
+  }
+
+  if (photoIn && prev && prevImg) {
+    photoIn.addEventListener('change', function () {
+      var f = photoIn.files && photoIn.files[0];
+      if (!f) return;
+      var url = URL.createObjectURL(f);
+      prevImg.src = url;
+      prev.hidden = false;
+    });
+  }
+
+  if (removeBtn && photoIn && prev && prevImg) {
+    removeBtn.addEventListener('click', function () {
+      photoIn.value = '';
+      prevImg.removeAttribute('src');
+      prev.hidden = true;
+    });
+  }
+
+  var gs = document.getElementById('groupSearchInput');
+  if (gs) gs.addEventListener('input', function () { filterGroups(gs.value); });
+
+  setupReportPeriod();
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeUploadModal();
+  });
+
+  try {
+    var saved = localStorage.getItem('danq_meal_count');
+    if (saved) {
+      var stat = document.querySelector('#s-my .my-stat-num');
+      if (stat) stat.textContent = saved;
+    }
+  } catch (err) {}
+
+  setTimeout(function () {
+    var r = document.getElementById('homeRing');
+    if (r) {
+      var c = 2 * Math.PI * 25;
+      r.style.strokeDasharray = String(c);
+      r.style.strokeDashoffset = String(c * 0.5);
+    }
+  }, 200);
+});
+</script>
+</body>
+</html>
