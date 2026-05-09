@@ -97,7 +97,7 @@ body {
 /* ── TOP HEADER ── */
 .top-bar {
   background: var(--white);
-  padding: 14px 20px 0;
+  padding: 18px 20px;
   display: flex; justify-content: space-between; align-items: center;
 }
 .logo {
@@ -203,7 +203,8 @@ body {
 }
 @supports (-webkit-touch-callout: none) {
   .top-bar {
-    padding-top: 4px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
   .bottom-nav {
     bottom: calc(18px + env(safe-area-inset-bottom, 0px));
@@ -3387,7 +3388,7 @@ body {
     <button type="button" class="nav-fab" onclick="openUploadModal()" aria-label="기록 추가">＋</button>
   </div>
   <button type="button" class="nav-it" id="n-care" onclick="goTo('s-care-feed')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 5.1-8.8 10.4-8.8 10.4S3.2 13.7 3.2 8.6A4.6 4.6 0 0112 6.7a4.6 4.6 0 018.8 1.9z"/><circle cx="8.2" cy="8.4" r="1.1" fill="currentColor" stroke="none"/><circle cx="11.9" cy="7.1" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.6" cy="8.4" r="1.1" fill="currentColor" stroke="none"/><path d="M9.5 12.9c.6-1.2 1.4-1.8 2.5-1.8s1.9.6 2.5 1.8c.4.8-.2 1.8-1.1 1.8h-2.8c-.9 0-1.5-1-1.1-1.8z" fill="currentColor" stroke="none"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="7.3" cy="9.2" r="2.1"/><circle cx="11.1" cy="6.7" r="2.1"/><circle cx="15.1" cy="6.9" r="2.1"/><circle cx="18.3" cy="9.8" r="2.1"/><path d="M6.7 15.9c.4-2.8 2.6-5 5.3-5s4.9 2.2 5.3 5c.3 2.1-1.1 3.6-3 3.1-.9-.2-1.5-.5-2.3-.5s-1.4.3-2.3.5c-1.9.5-3.3-1-3-3.1z"/></svg>
     <span class="nav-lbl">케어 피드</span>
   </button>
   <button type="button" class="nav-it" id="n-my" onclick="goTo('s-my')">
