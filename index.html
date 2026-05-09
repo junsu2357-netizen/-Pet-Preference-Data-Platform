@@ -206,11 +206,11 @@ body {
     padding-top: 4px;
   }
   .bottom-nav {
-    bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
   .scroll,
   #s-home .scroll {
-    padding-bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(142px + env(safe-area-inset-bottom, 0px));
   }
 }
 .nav-it {
@@ -729,14 +729,14 @@ body {
 
 /* ═══════════════ RECORD ═══════════════ */
 .rec-nav {
-  background:var(--white); padding:8px 20px 14px;
+  background:var(--white); padding:0 20px 10px;
   border-bottom:1px solid var(--border);
   position: relative;
 }
 .rec-back {
   position: absolute;
   left: 12px;
-  top: 6px;
+  top: 0;
   display:flex;
   align-items:center;
   margin-bottom:0;
@@ -754,6 +754,7 @@ body {
   font-size:13px; color:var(--text3); text-align:center;
   display:flex; align-items:center; gap:5px; justify-content:center; margin-bottom:4px;
   margin-top: 0;
+  padding-top: 2px;
 }
 .rec-title2 { font-size:22px; font-weight:800; color:var(--text); text-align:center; letter-spacing:-0.6px; margin-bottom:3px; }
 .rec-sub2 { font-size:13px; color:var(--text3); text-align:center; }
