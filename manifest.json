@@ -1,0 +1,20 @@
+
+  {
+    "name": "Dan Q",
+    "short_name": "Dan Q",
+    "description": "Data Driven Pet-Life App",
+    "start_url": "./danq_work.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#0f1712",
+    "theme_color": "#2d8653",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "./assetspaid-report-center.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  }
