@@ -8,6 +8,21 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 [hidden] { display: none !important; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body, button, input, textarea, select {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+button, input, textarea, select {
+  font: inherit;
+}
+body * {
+  min-width: 0;
+}
 
 :root {
   --accent: #157123;
@@ -34,32 +49,32 @@
 body {
   background: #f2eee7;
   font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-  display: flex; justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh; padding: 24px 16px 40px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 /* ── PHONE SHELL ── */
 .phone {
-  width: 390px;
-  max-width: 100%;
-  height: 720px;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
   background: var(--bg);
-  border-radius: 44px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
   isolation: isolate;
-  box-shadow:
-    0 40px 100px rgba(0,0,0,0.35),
-    0 0 0 1px rgba(255,255,255,0.12),
-    inset 0 0 0 1px rgba(0,0,0,0.08);
+  box-shadow: none;
 }
 
 /* ── STATUS BAR ── */
 .status {
   background: var(--white);
   display: none; justify-content: space-between; align-items: center;
-  padding: 16px 26px 8px;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 20px 8px;
   font-size: 13px; font-weight: 700; color: var(--text);
   letter-spacing: -0.3px;
 }
@@ -72,17 +87,17 @@ body {
 @keyframes fadein { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 
 /* ── SCROLL ── */
-.scroll { flex:1; min-height: 0; overflow-y:auto; padding-bottom: 96px; -webkit-overflow-scrolling: touch; }
+.scroll { flex:1; min-height: 0; overflow-y:auto; padding-bottom: 128px; -webkit-overflow-scrolling: touch; }
 .scroll::-webkit-scrollbar { display:none; }
 #s-home .scroll {
   padding-top: 12px;
-  padding-bottom: 0;
+  padding-bottom: 128px;
 }
 
 /* ── TOP HEADER ── */
 .top-bar {
   background: var(--white);
-  padding: 26px 20px 0;
+  padding: 22px 20px 0;
   display: flex; justify-content: space-between; align-items: center;
 }
 .logo {
@@ -136,7 +151,7 @@ body {
   position: absolute;
   left: 10px;
   right: 10px;
-  bottom: 8px;
+  bottom: calc(0px + env(safe-area-inset-bottom, 0px));
   width: auto;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px);
@@ -146,10 +161,45 @@ body {
   grid-template-columns: 1fr 1fr 76px 1fr 1fr;
   align-items: flex-end;
   justify-items: center;
-  padding: 4px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 4px 0 8px;
   z-index: 200;
   height: 60px;
   border-radius: 24px;
+}
+
+@media (max-width: 374px) {
+  .top-bar {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .segtabs {
+    padding: 0 16px;
+    overflow-x: auto;
+  }
+  .bottom-nav {
+    left: 6px;
+    right: 6px;
+    grid-template-columns: 1fr 1fr 58px 1fr 1fr;
+  }
+  .nav-fab-slot {
+    width: 58px;
+  }
+  .nav-lbl {
+    font-size: 9px;
+  }
+  .home-hero {
+    grid-template-columns: 1fr;
+  }
+  .home-hero-visual {
+    min-height: 132px;
+    order: -1;
+  }
+  .home-hero-copy {
+    padding: 14px 16px 16px;
+  }
+  .hero-title {
+    font-size: 16px;
+  }
 }
 .nav-it {
   width: 100%;
@@ -247,12 +297,14 @@ body {
   color: var(--text);
   line-height: 1.35;
   letter-spacing: -0.6px;
+  text-wrap: balance;
 }
 .hero-desc {
   font-size: 12px;
   color: var(--text2);
   line-height: 1.55;
   font-weight: 500;
+  text-wrap: pretty;
 }
 .home-hero-visual {
   position: relative;
@@ -286,6 +338,42 @@ body {
   overflow-x: auto;
 }
 .feed-row::-webkit-scrollbar { display: none; }
+#homePopularFeedRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  overflow: visible;
+}
+#homePopularFeedRow .feed-thumb-wrap,
+#homePopularFeedRow .feed-thumb-img {
+  width: 100%;
+}
+#homePopularFeedRow .feed-thumb-img {
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+#homePopularFeedRow .feed-thumb-sub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+#homePopularFeedRow .feed-thumb-avatar {
+  width: 14px;
+  height: 14px;
+  font-size: 8px;
+}
+#homePopularFeedRow .feed-thumb-user {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 10px;
+}
+#homePopularFeedRow .feed-thumb-likes {
+  flex: 0 0 auto;
+  grid-column: auto;
+  font-size: 10px;
+  line-height: 1;
+}
 .feed-thumb-wrap {
   flex-shrink: 0; width: 114px; cursor: pointer;
 }
@@ -306,14 +394,32 @@ body {
   margin-bottom: 2px;
 }
 .feed-thumb-sub {
-  display: flex; align-items: center; gap: 5px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 4px;
+  align-items: center;
 }
 .feed-thumb-avatar {
   width: 16px; height: 16px; border-radius: 50%; background: var(--green-bg);
   display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0;
 }
-.feed-thumb-user { font-size: 11px; color: var(--text3); }
-.feed-thumb-likes { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.feed-thumb-user {
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.feed-thumb-likes {
+  grid-column: 2;
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  margin-left: 0;
+}
 
 /* 오늘 현황 카드 */
 .today-card {
@@ -1296,6 +1402,13 @@ body {
   width: 62px; height: 62px; border-radius: 50%; background: var(--green-bg);
   display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;
   border: 2px solid var(--green-border);
+  overflow: hidden;
+}
+.my-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .my-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; margin-bottom: 2px; }
 .my-handle { font-size: 13px; color: var(--text3); margin-bottom: 8px; }
@@ -2199,7 +2312,7 @@ body {
       <div class="feed-row">
         <div class="feed-thumb-wrap">
           <div class="feed-thumb-img care-pose-back">
-            <img src="dog%20image%20sample/KakaoTalk_20260507_144846769.jpg" alt="아침 피드의 두부 사진" onerror="this.parentElement.style.background='#C5E8D5';this.style.display='none'">
+            <img src="dog%20image%20sample/KakaoTalk_20260509_120800807_01.jpg" alt="아침 피드의 두부 사진" onerror="this.parentElement.style.background='#C5E8D5';this.style.display='none'">
           </div>
           <div class="feed-thumb-meta">
             <div class="feed-thumb-cap">아침 사료 완식</div>
@@ -2212,7 +2325,7 @@ body {
         </div>
         <div class="feed-thumb-wrap">
           <div class="feed-thumb-img care-pose-smile">
-            <img src="dog%20image%20sample/KakaoTalk_20260507_144846769_01.jpg" alt="점심 피드의 두부 사진" onerror="this.parentElement.style.background='#F5E6C0';this.style.display='none'">
+            <img src="dog%20image%20sample/KakaoTalk_20260509_120800807_02.jpg" alt="점심 피드의 두부 사진" onerror="this.parentElement.style.background='#F5E6C0';this.style.display='none'">
           </div>
           <div class="feed-thumb-meta">
             <div class="feed-thumb-cap">산책 후 컨디션 좋아요</div>
@@ -2225,7 +2338,7 @@ body {
         </div>
         <div class="feed-thumb-wrap">
           <div class="feed-thumb-img care-pose-rest">
-            <img src="dog%20image%20sample/KakaoTalk_20260507_144846769_02.jpg" alt="저녁 피드의 두부 사진" onerror="this.parentElement.style.background='#FFD6D6';this.style.display='none'">
+            <img src="dog%20image%20sample/KakaoTalk_20260509_120800807_03.jpg" alt="저녁 피드의 두부 사진" onerror="this.parentElement.style.background='#FFD6D6';this.style.display='none'">
           </div>
           <div class="feed-thumb-meta">
             <div class="feed-thumb-cap">저녁 간식도 잘 먹었어요</div>
@@ -2392,7 +2505,7 @@ body {
 <section class="rp-hero" id="reportWeeklySummary" aria-label="주간 요약">
       <img
         class="rp-hero-avatar"
-        src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=128&q=85&fit=crop"
+        src="dog%20image%20sample/KakaoTalk_20260509_120800807.jpg"
         alt=""
         width="56"
         height="56"
@@ -3116,10 +3229,10 @@ body {
   </div>
   <div class="scroll">
     <div class="my-profile-card">
-      <div class="my-avatar" aria-hidden="true">🐕</div>
+      <div class="my-avatar" aria-hidden="true"><img src="dog%20image%20sample/KakaoTalk_20260509_120800807.jpg" alt=""></div>
       <div style="flex:1;">
         <div class="my-name">김두부</div>
-        <div class="my-handle">리트리버 · 3살 · 중성화 완료</div>
+        <div class="my-handle">비숑 프리제 · 3살 · 중성화 완료</div>
         <button type="button" class="my-edit-btn" onclick="showToast('프로필 수정')">프로필 수정</button>
       </div>
     </div>
@@ -3303,17 +3416,17 @@ let cartItems = [];
 let checkoutBackScreen = 's-preference-kit';
 
 const baseMealRecords = [
-  { date: '2026-05-09', time: '08:20', meal: '아침', title: '닭가슴살 베이스 사료', status: '완식', duration: 10, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769.jpg' },
-  { date: '2026-05-09', time: '12:40', meal: '점심', title: '연어 오일 토핑 스페셜', status: '일부', duration: 14, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_01.jpg' },
-  { date: '2026-05-09', time: '18:10', meal: '저녁', title: '소고기 야채 믹스', status: '완식', duration: 12, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_02.jpg' },
-  { date: '2026-05-08', time: '08:10', meal: '아침', title: '산양유 파우더 토핑', status: '완식', duration: 11, photo: false, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_03.jpg' },
-  { date: '2026-05-08', time: '19:00', meal: '저녁', title: '닭가슴살 베이스 사료', status: '완식', duration: 13, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_04.jpg' }
+  { date: '2026-05-09', time: '08:20', meal: '아침', title: '닭가슴살 베이스 사료', status: '완식', duration: 10, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260509_120800807_01.jpg' },
+  { date: '2026-05-09', time: '12:40', meal: '점심', title: '연어 오일 토핑 스페셜', status: '일부', duration: 14, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260509_120800807_02.jpg' },
+  { date: '2026-05-09', time: '18:10', meal: '저녁', title: '소고기 야채 믹스', status: '완식', duration: 12, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260509_120800807_03.jpg' },
+  { date: '2026-05-08', time: '08:10', meal: '아침', title: '산양유 파우더 토핑', status: '완식', duration: 11, photo: false, image: 'dog%20image%20sample/KakaoTalk_20260509_120800807_04.jpg' },
+  { date: '2026-05-08', time: '19:00', meal: '저녁', title: '닭가슴살 베이스 사료', status: '완식', duration: 13, photo: true, image: 'dog%20image%20sample/KakaoTalk_20260509_120800807_05.jpg' }
 ];
 
 const popularFeeds = [
-  { id: 'popular-1', title: '아침 사료 완식 성공', user: '두부', likes: 128, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_05.jpg', text: '아침 사료를 남김 없이 먹었어요. 새로운 토핑 조합에 반응이 좋아서 다음 급여에도 이어가 보려고 해요.' },
-  { id: 'popular-2', title: '산책 후 간식 반응', user: '두부', likes: 96, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_06.jpg', text: '산책 후 급여한 간식 반응이 안정적이었고 물도 잘 마셨어요. 활동량이 충분했던 날의 기록입니다.' },
-  { id: 'popular-3', title: '저녁 식사 패턴 체크', user: '두부', likes: 73, image: 'dog%20image%20sample/KakaoTalk_20260507_144846769_07.jpg', text: '저녁에는 먹는 속도가 조금 느렸지만 끝까지 잘 먹었습니다. 시간대별 반응 차이를 계속 기록 중이에요.' }
+  { id: 'popular-1', title: '아침 사료 완식 성공', user: '둥이맘', likes: 128, image: 'dog%20image%20sample/KakaoTalk_20260508_160036537.jpg', text: '아침 사료를 남김 없이 먹었어요. 새로운 토핑 조합에 반응이 좋아서 다음 급여에도 이어가 보려고 해요.' },
+  { id: 'popular-2', title: '산책 후 간식 반응', user: '집사', likes: 96, image: 'dog%20image%20sample/KakaoTalk_20260509_113634321_02.jpg', text: '산책 후 급여한 간식 반응이 안정적이었고 물도 잘 마셨어요. 활동량이 충분했던 날의 기록입니다.' },
+  { id: 'popular-3', title: '저녁 식사 패턴 체크', user: '모찌언니', likes: 73, image: 'dog%20image%20sample/KakaoTalk_20260509_120100559_08.jpg', text: '저녁에는 먹는 속도가 조금 느렸지만 끝까지 잘 먹었습니다. 시간대별 반응 차이를 계속 기록 중이에요.' }
 ];
 
 function escapeHtml(value) {
