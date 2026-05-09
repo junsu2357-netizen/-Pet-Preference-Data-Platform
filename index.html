@@ -201,6 +201,15 @@ body {
     font-size: 16px;
   }
 }
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav {
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  .scroll,
+  #s-home .scroll {
+    padding-bottom: calc(148px + env(safe-area-inset-bottom, 0px));
+  }
+}
 .nav-it {
   width: 100%;
   max-width: 88px;
