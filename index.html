@@ -729,10 +729,18 @@ body {
 
 /* ═══════════════ RECORD ═══════════════ */
 .rec-nav {
-  background:var(--white); padding:6px 20px 14px;
+  background:var(--white); padding:8px 20px 14px;
   border-bottom:1px solid var(--border);
+  position: relative;
 }
-.rec-back { display:flex; align-items:center; margin-bottom:2px; }
+.rec-back {
+  position: absolute;
+  left: 12px;
+  top: 6px;
+  display:flex;
+  align-items:center;
+  margin-bottom:0;
+}
 .back-btn2 {
   width: 40px;
   height: 40px;
@@ -745,6 +753,7 @@ body {
 .rec-meal-kw {
   font-size:13px; color:var(--text3); text-align:center;
   display:flex; align-items:center; gap:5px; justify-content:center; margin-bottom:4px;
+  margin-top: 0;
 }
 .rec-title2 { font-size:22px; font-weight:800; color:var(--text); text-align:center; letter-spacing:-0.6px; margin-bottom:3px; }
 .rec-sub2 { font-size:13px; color:var(--text3); text-align:center; }
