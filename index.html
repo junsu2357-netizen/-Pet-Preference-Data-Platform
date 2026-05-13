@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dan Q | Data Driven Pet Life Integration Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121814;
+            --card-bg: #1c231f;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --accent-green: #2d8653;
+            --accent-purple: #6a4bc4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .container {
+            display: flex;
+            gap: 24px;
+            max-width: 1100px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .card {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 48px 32px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .card-category {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .b2c-cat { color: #5bb07d; }
+        .b2b-cat { color: #2d8653; }
+        .app-cat { color: #8a70d6; }
+
+        .card h2 {
+            font-size: 26px;
+            font-weight: 900;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            word-break: keep-all;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            flex-grow: 1;
+            word-break: keep-all;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        .btn-white { background-color: #ffffff; color: #121814; }
+        .btn-green { background-color: var(--accent-green); color: #ffffff; }
+        .btn-purple { background-color: var(--accent-purple); color: #ffffff; }
+
+        .footer {
+            margin-top: 80px;
+            font-size: 13px;
+            color: #444;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 850px) {
+            .container { flex-direction: column; }
+            .header h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Dan Q</h1>
+        <p>Data Driven Pet Life Integration Platform</p>
+    </div>
+
+    <div class="container">
+        <!-- B2C Card -->
+        <div class="card">
+            <div class="card-category b2c-cat">INDIVIDUAL / B2C</div>
+            <h2>반려인을 위한<br>맞춤형 큐레이션</h2>
+            <p>우리 아이를 위한 최적의 데이터 분석, 개인화된 펫푸드 추천 서비스를 경험하세요.</p>
+            <a href="b2c-single.html" class="btn btn-white">Get Started →</a>
+        </div>
+
+        <!-- B2B Card -->
+        <div class="card">
+            <div class="card-category b2b-cat">ENTERPRISE / B2B</div>
+            <h2>기업을 위한<br>시장 데이터 분석</h2>
+            <p>펫 산업 인사이트와 마켓 트렌드, 정교한 데이터 대시보드를 제공합니다.</p>
+            <a href="dangq_v10 (1).html" class="btn btn-green">Business Console →</a>
+        </div>
+
+        <!-- APP Card -->
+        <div class="card">
+            <div class="card-category app-cat">MOBILE APP</div>
+            <h2>Dan Q<br>소비자 모바일 앱</h2>
+            <p>언제 어디서든 간편하게, 우리 아이 식단 관리와 기록을 시작하세요.</p>
+            <a href="app.html" class="btn btn-purple">Open App →</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2026 Dan Q Platform Project. Built for Excellence.
+    </div>
+
+</body>
+</html>
